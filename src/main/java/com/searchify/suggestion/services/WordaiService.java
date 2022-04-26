@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -16,9 +17,14 @@ import net.minidev.json.JSONObject;
 @Service
 public class WordaiService {
 	
-	private final String baseUrl = "https://wai.wordai.com/api/rewrite?";
-	private final String email = "tu.buffalo.kid@gmail.com";
-	private final String key = "f3fdc268f84ae49daa7a2f1cca453ec0";
+	@Value("${wordai.base.url}")
+	private String baseUrl;
+	
+	@Value("${wordai.email}")
+	private String email;
+	
+	@Value("${wordai.key}")
+	private String key;
 	
 //	https://wai.wordai.com/api/rewrite?email=tu.buffalo.kid@gmail.com&key=f3fdc268f84ae49daa7a2f1cca453ec0&input=This is a test.&rewrite_num=2&uniqueness=3&return_rewrites=true
 

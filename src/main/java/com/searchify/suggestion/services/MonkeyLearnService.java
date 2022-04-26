@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -17,11 +18,14 @@ import net.minidev.json.JSONObject;
 @Service 
 public class MonkeyLearnService {
 	
-	private final String url_classifier = "https://api.monkeylearn.com/v3/classifiers/";
+	@Value("${monkey.url.classifier}")
+	private  String url_classifier;
 	
-	private final String modelId = "cl_C7mL5L3B";
+	@Value("${monkey.model.id}")
+	private  String modelId;
 	
-	private final String apiKey = "ac2c5080fcc8a2e39195c3c69cdaddd8379b4b17";
+	@Value("${monkey.apiKey}")
+	private String apiKey ;
 	
 	public List<JSONObject> getClassifications(List<String> data) {
 		

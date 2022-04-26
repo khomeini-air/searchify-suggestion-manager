@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SearchifySurveyManagerApplication {
+public class SearchifySuggestionManagerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SearchifySurveyManagerApplication.class, args);
+		SpringApplication.run(SearchifySuggestionManagerApplication.class, args);
 	}
 
 }
