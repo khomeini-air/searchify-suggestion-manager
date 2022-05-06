@@ -22,7 +22,7 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
     - name: Stop current process
-      if: $(sudo lsof -ti:8084)
       run: sudo kill -9 $(sudo lsof -ti:8084)
     - name: Execute Jar File
+      if: ${{ failure() }}
       run: sudo java -jar /searchify/searchify-suggestion-manager/actions-runner/_work/searchify-suggestions-mananager/searchify-suggestions-mananager/target/searchify-suggestion-manager-0.0.1-SNAPSHOT.jar
