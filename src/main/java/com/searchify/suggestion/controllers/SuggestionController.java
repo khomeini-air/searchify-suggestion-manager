@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.searchify.suggestion.entity.SimpleSuggestion;
 import com.searchify.suggestion.entity.Suggestion;
 import com.searchify.suggestion.entity.SuggestionResultDto;
 import com.searchify.suggestion.entity.Tag;
@@ -53,17 +54,17 @@ class SuggestionController {
    	}
     
     @CrossOrigin
+   	@PostMapping("/suggestion/tags/attachMulti")
+    Suggestion attachMultiTags(@RequestBody Map<String, Object> params) {
+   		return suggestionService.attachMultiTags((String)params.get("sugId"),(List<String>) params.get("tagIds"));
+   	}
+    
+    @CrossOrigin
    	@PostMapping("/suggestion/tags/attach")
     Suggestion attachTag(@RequestBody Map<String, String> params) {
    		return suggestionService.attachSuggestion(params.get("sugId"), params.get("tagId"));
    	}
 
-
-//	@GetMapping("/suggestion/search")
-//	List<SuggestionResultDto> search(@RequestParam("q") String title) {
-//		return suggestionService.searchMoviesByTitle(stripWildcards(title));
-//	}
-//	
     
     @CrossOrigin
 	@GetMapping("/deepai/text")
@@ -86,37 +87,21 @@ class SuggestionController {
     
     @CrossOrigin
 	@PostMapping("/suggestion/multi")
-	Collection<Suggestion> searchByMultiParams(@RequestBody Map<String, String> params) {
-		return suggestionService.getSuggestionsByParameters(params.get("Domain"));
+	Collection<Suggestion> searchByMultiParams(@RequestBody List<String> tags) {
+		return suggestionService.getSuggestionsByParameters(tags);
 	}
-    
-    @CrossOrigin
-   	@PostMapping("/suggestion/queryByAnswers")
-   	List<Suggestion> queryByAnswers(@RequestBody Map<String, Object> answers) {
-   		Collection<Suggestion> suggestions =  suggestionService.getSuggestionsByParameters(((Map<String, String>) answers.get("step1")).get("domain"));
-   		String businessName = (String) answers.get("businessName");
-   		List<Suggestion> list = new ArrayList<Suggestion>();
-   		for(Suggestion suggestion : suggestions) {
-   			String description = suggestion.getDescription();
-   			
-   			suggestion.setDescription(description.replaceAll("\\{BusinessName}", businessName));
-   			
-   			list.add(suggestion);
-   		}
-   
-   		return list;
-   	}
-    
+
     @CrossOrigin
 	@PostMapping("/suggestion/update")
 	Suggestion update(@RequestBody Suggestion suggestion) {
 		return suggestionService.updateSuggestion(suggestion);
 	}
-
-//	@GetMapping("/graph")
-//	public Map<String, List<Object>> getGraph() {
-//		return suggestionService.fetchMovieGraph();
-//	}
+    
+    @CrossOrigin
+   	@PostMapping("/suggestion/create")
+   	Suggestion create(@RequestBody SimpleSuggestion simpleSuggestion) {
+   		return suggestionService.createSuggestion(simpleSuggestion);
+   	}
 
 	private static String stripWildcards(String title) {
 		String result = title;
