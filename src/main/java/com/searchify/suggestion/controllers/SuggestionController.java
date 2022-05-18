@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.searchify.suggestion.entity.Domain;
 import com.searchify.suggestion.entity.SimpleSuggestion;
 import com.searchify.suggestion.entity.Suggestion;
 import com.searchify.suggestion.entity.SuggestionResultDto;
@@ -50,7 +51,7 @@ class SuggestionController {
     @CrossOrigin
    	@PostMapping("/suggestion/tags")
    	List<Tag> getAllTags(@RequestBody Map<String, String> params) {
-   		return suggestionService.getAllTags(params.get("label"));
+   		return suggestionService.getAllTags(params.get("domain"));
    	}
     
     @CrossOrigin
@@ -83,6 +84,12 @@ class SuggestionController {
 	@GetMapping("/suggestion/domain")
 	List<SuggestionResultDto> searchByDomain(@RequestParam("domain") String domain) {
 		return new ArrayList(suggestionService.searchSuggestionByDomain(stripWildcards(domain)));
+	}
+    
+    @CrossOrigin
+	@GetMapping("/suggestion/domains")
+	List<Domain> getAllDomains() {
+		return new ArrayList(suggestionService.getAllDomains());
 	}
     
     @CrossOrigin

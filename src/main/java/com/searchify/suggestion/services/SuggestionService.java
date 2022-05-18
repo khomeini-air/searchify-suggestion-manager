@@ -12,6 +12,7 @@ import org.springframework.data.neo4j.core.DatabaseSelectionProvider;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
 
+import com.searchify.suggestion.entity.Domain;
 import com.searchify.suggestion.entity.Relationship;
 import com.searchify.suggestion.entity.SimpleSuggestion;
 import com.searchify.suggestion.entity.Suggestion;
@@ -217,9 +218,11 @@ public class SuggestionService {
 		return (List<String>) result;
 	}
 
-	public List<Tag> getAllTags(String label) {
+	public List<Tag> getAllTags(String domain) {
 
-		String queryString = "MATCH (n:" + label + ") RETURN ID(n) as id, n.name as name";
+		String queryString = " MATCH (n:Tag)-[r:IS_LINKED_WITH]->(d: Domain) " +
+				           	 " WHERE (d.name contains '"+domain +"')" +
+				             " RETURN ID(n) as id, n.name as name";
 
 		Object result =  this.neo4jClient
 				.query(queryString)
@@ -323,6 +326,24 @@ public class SuggestionService {
 		}
 
 		return null;
+	}
+
+
+	public List<Domain> getAllDomains() {
+
+		String queryString = " MATCH (d: Domain) " +
+				             " RETURN ID(d) as id, d.name as name";
+
+		Object result =  this.neo4jClient
+				.query(queryString)
+				.fetchAs(Object.class).mappedBy((ts, r) ->
+				new Domain(r.get("id") + "", 
+						r.get("name").asString(),
+						r.get("name").asString()))
+				.all();
+
+		return (List<Domain>) result;
+
 	}
 
 }
