@@ -14,15 +14,18 @@ public class Suggestion {
 	private String id;
 
 	private String title;
+	
+	private String keywords;
 
 	private String description;
 	
 	private Object relationships;
 
-	public Suggestion(String id, String name, String title, String description, Object relationships) {
+	public Suggestion(String id, String name, String title, String keywords, String description, Object relationships) {
 		this.id = id;
 		this.name = name;
 		this.title = title;
+		this.keywords = keywords;
 		this.description = description;
 		this.relationships = relationships;
 	}
@@ -46,6 +49,14 @@ public class Suggestion {
 
 	public String getTitle() {
 		return title;
+	}
+	
+	public void setKeywords(String keywords) {
+		this.keywords = keywords;
+	}
+
+	public String getKeywords() {
+		return keywords;
 	}
 
 	public String getDescription() {

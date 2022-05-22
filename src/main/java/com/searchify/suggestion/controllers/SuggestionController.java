@@ -82,7 +82,7 @@ class SuggestionController {
     
     @CrossOrigin
 	@GetMapping("/suggestion/domain")
-	List<SuggestionResultDto> searchByDomain(@RequestParam("domain") String domain) {
+	List<Suggestion> searchByDomain(@RequestParam("domain") String domain) {
 		return new ArrayList(suggestionService.searchSuggestionByDomain(stripWildcards(domain)));
 	}
     
