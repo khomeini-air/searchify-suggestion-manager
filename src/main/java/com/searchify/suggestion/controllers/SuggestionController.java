@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.searchify.suggestion.entity.Domain;
+import com.searchify.suggestion.entity.RequestTagList;
 import com.searchify.suggestion.entity.SimpleSuggestion;
 import com.searchify.suggestion.entity.Suggestion;
-import com.searchify.suggestion.entity.SuggestionResultDto;
 import com.searchify.suggestion.entity.Tag;
 import com.searchify.suggestion.services.DeepaiService;
 import com.searchify.suggestion.services.SuggestionService;
@@ -94,8 +94,8 @@ class SuggestionController {
     
     @CrossOrigin
 	@PostMapping("/suggestion/multi")
-	Collection<Suggestion> searchByMultiParams(@RequestBody List<String> tags) {
-		return suggestionService.getSuggestionsByParameters(tags);
+	Collection<Suggestion> searchByMultiParams(@RequestBody RequestTagList request) {
+		return suggestionService.getSuggestionsByParameters(request);
 	}
 
     @CrossOrigin

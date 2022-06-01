@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.searchify.suggestion.entity.Domain;
 import com.searchify.suggestion.entity.Relationship;
+import com.searchify.suggestion.entity.RequestTagList;
 import com.searchify.suggestion.entity.SimpleSuggestion;
 import com.searchify.suggestion.entity.Suggestion;
 import com.searchify.suggestion.entity.SuggestionResultDto;
@@ -97,20 +98,22 @@ public class SuggestionService {
 		return a;
 	}
 
-	public Collection<Suggestion> getSuggestionsByParameters(List<String> params) {
+	public Collection<Suggestion> getSuggestionsByParameters(RequestTagList request) {
+		String domain = request.getDomain();
+		List<String> tags = request.getTags();
 		Map<String, Object> tagging = new HashMap<String, Object>();
-		String match = "";
+		String match = "MATCH (p:Suggestion)-[rel]-(r:Tag) WITH p, collect(r) as rs";
 		String where = "WHERE";
-		String return_string = "RETURN ID(p) as id, p.name as name, p.title as title, p.keywords as keywords, p.description as description";
+		String return_string = "RETURN ID(p) as id, p.name as name, p.title as title, p.keywords as keywords, p.description as description, rs as relationships";
 		int count = 0;
-		for (String para : params) {
-			match =  match + " MATCH (p:Suggestion)-[r" + count +":IS_LINKED_WITH]" + "->(t"+count+": Domain)";
+		for (String tagName : tags) {
+			match =  match + " MATCH (p:Suggestion)-[r" + count +":IS_LINKED_WITH]" + "->(t"+count+": Tag)";
 			if(count==0) {
 				where = where +  " (t"+ count+".name contains $tag" + count + ")";
 			}else {
 				where = where +  " AND (t"+ count+".name contains $tag" + count + ")";
 			}
-			tagging.put("tag"+count, para);
+			tagging.put("tag"+count, tagName);
 			count ++;
 		}
 		String queryString = match + where + return_string;
@@ -122,8 +125,15 @@ public class SuggestionService {
 						(r.get("name").asString()), 
 						(r.get("title").asString()), 
 						(r.get("keywords").asString()), 
-						(r.get("description").asString()), null))
-				.all();
+						(r.get("description").asString()), 
+						(r.get("relationships").asList((rel) -> 
+						new Relationship((( (List<String>)((InternalNode) rel.asEntity() ).labels())!=null ? ((List<String>)((InternalNode) rel.asEntity() ).labels()).get(0):null),
+								rel.get("name").asString())))
+				)).all();
+		
+		if(suggestions == null || suggestions.isEmpty()) {
+			suggestions = searchSuggestionByDomain(domain);
+		}
 
 		return suggestions;
 	}
