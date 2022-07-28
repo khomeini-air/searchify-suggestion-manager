@@ -31,9 +31,11 @@ public class WordaiService {
 	
 	public List<String> generateText(String inputText) {
 		
+		String niceText = inputText.replaceAll("&", "::");
+		
 		String requestString = baseUrl + "email=" + email
 									   + "&key="  + key
-									   + "&input="  + inputText
+									   + "&input="  + niceText
 									   + "&rewrite_num=3&uniqueness=3&return_rewrites=true";
 		
 		RestTemplate restTemplate = new RestTemplate();

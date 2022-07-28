@@ -14,13 +14,16 @@ public class SimpleSuggestion {
 
 	private String description;
 	
+	private String domain;
+	
 	private Object relationships;
 
-	public SimpleSuggestion(String name, String title, String keywords, String description, Object relationships) {
+	public SimpleSuggestion(String name, String title, String keywords, String description, String domain, Object relationships) {
 		this.name = name;
 		this.title = title;
 		this.keywords = keywords;
 		this.description = description;
+		this.domain = domain;
 		this.relationships = relationships;
 	}
 	
@@ -50,6 +53,14 @@ public class SimpleSuggestion {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+
+	public String getDomain() {
+		return domain;
 	}
 
 	public Object getRelationships() {

@@ -21,6 +21,8 @@ import com.searchify.suggestion.services.DeepaiService;
 import com.searchify.suggestion.services.SuggestionService;
 import com.searchify.suggestion.services.WordaiService;
 
+import net.minidev.json.JSONObject;
+
 @RestController
 class SuggestionController {
 
@@ -55,15 +57,21 @@ class SuggestionController {
    	}
     
     @CrossOrigin
+   	@PostMapping("/suggestion/tags/create")
+   	JSONObject createTag(@RequestBody Map<String, String> params) {
+   		return suggestionService.createTag(params.get("domain"), params.get("tagName"));
+   	}
+    
+    @CrossOrigin
    	@PostMapping("/suggestion/tags/attachMulti")
     Suggestion attachMultiTags(@RequestBody Map<String, Object> params) {
-   		return suggestionService.attachMultiTags((String)params.get("sugId"),(List<String>) params.get("tagIds"));
+   		return suggestionService.attachMultiTagsIntoSuggestion((String)params.get("sugId"),(List<String>) params.get("tagIds"));
    	}
     
     @CrossOrigin
    	@PostMapping("/suggestion/tags/attach")
     Suggestion attachTag(@RequestBody Map<String, String> params) {
-   		return suggestionService.attachSuggestion(params.get("sugId"), params.get("tagId"));
+   		return suggestionService.attachTagIntoSuggestion(params.get("sugId"), params.get("tagId"));
    	}
 
     
@@ -76,14 +84,14 @@ class SuggestionController {
     
     @CrossOrigin
     @PostMapping("/wordai/text")
-	List<String> generateWordAiText(@RequestParam("text") String text) {
-		return wordaiService.generateText(text);
+	List<String> generateWordAiText(@RequestBody Map<String, String> params) {
+		return wordaiService.generateText(params.get("text"));
 	}
     
     @CrossOrigin
-	@GetMapping("/suggestion/domain")
-	List<Suggestion> searchByDomain(@RequestParam("domain") String domain) {
-		return new ArrayList(suggestionService.searchSuggestionByDomain(stripWildcards(domain)));
+    @PostMapping("/suggestion/domain")
+	List<Suggestion> searchByDomain(@RequestBody Map<String, String> params) {
+		return new ArrayList(suggestionService.searchSuggestionByDomain(stripWildcards(params.get("domain"))));
 	}
     
     @CrossOrigin
@@ -107,7 +115,7 @@ class SuggestionController {
     @CrossOrigin
    	@PostMapping("/suggestion/create")
    	Suggestion create(@RequestBody SimpleSuggestion simpleSuggestion) {
-   		return suggestionService.createSuggestion(simpleSuggestion);
+   		return suggestionService.createSimpleSuggestion(simpleSuggestion);
    	}
 
 	private static String stripWildcards(String title) {

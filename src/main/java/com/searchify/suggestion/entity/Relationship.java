@@ -2,22 +2,22 @@ package com.searchify.suggestion.entity;
 
 public class Relationship {
 	
-	private String name;
+	private String label;
 	
 	private String value;
 
-	public Relationship(String name, String value) {
+	public Relationship(String label, String value) {
 		super();
-		this.name = name;
+		this.label = label;
 		this.value = value;
 	}
 
-	public String getName() {
-		return name;
+	public String getLabel() {
+		return label;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setLabel(String label) {
+		this.label = label;
 	}
 
 	public String getValue() {

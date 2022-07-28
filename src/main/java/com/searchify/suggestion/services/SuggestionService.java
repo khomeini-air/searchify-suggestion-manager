@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.plexus.util.StringUtils;
+import org.neo4j.cypherdsl.core.Relationship.Details;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.internal.InternalNode;
 import org.springframework.data.neo4j.core.DatabaseSelectionProvider;
@@ -20,6 +22,8 @@ import com.searchify.suggestion.entity.Suggestion;
 import com.searchify.suggestion.entity.SuggestionResultDto;
 import com.searchify.suggestion.entity.Tag;
 import com.searchify.suggestion.repositories.SuggestionRepository;
+
+import net.minidev.json.JSONObject;
 
 @Service
 public class SuggestionService {
@@ -80,11 +84,11 @@ public class SuggestionService {
 		
 		Collection<Suggestion> a =  this.neo4jClient
 				.query("" +
-
-				"MATCH (p:Suggestion)-[r:IS_LINKED_WITH]" + 
+				" MATCH (p:Suggestion)-[rel]-(r:Tag) WITH p, collect(r) as rs" +
+				" MATCH (p:Suggestion)-[r:IS_LINKED_WITH]" + 
 				"->(d: Domain)" + 
 				"where (d.name contains $name)" +
-				"RETURN ID(p) as id, p.name as name, p.title as title, p.keywords as keywords, p.description as description"
+				"RETURN ID(p) as id, p.name as name, p.title as title, p.keywords as keywords, p.description as description, rs as relationships"
 						)
 				.bindAll(Map.of("name", name))
 				.fetchAs(Suggestion.class).mappedBy((ts, r) -> 
@@ -93,8 +97,10 @@ public class SuggestionService {
 						(r.get("title").asString()), 
 						(r.get("keywords").asString()), 
 						(r.get("description").asString()),
-						null
-						)).all();
+						(r.get("relationships").asList((rel) -> 
+						new Relationship((( (List<String>)((InternalNode) rel.asEntity() ).labels())!=null ? rel.get("name").asString():null),
+								Long.toString(((InternalNode) rel.asEntity() ).id()))))
+				)).all();
 		return a;
 	}
 
@@ -143,7 +149,7 @@ public class SuggestionService {
 		Collection<Suggestion> suggestions =		this.neo4jClient
 				.query("" +
 
-				"MATCH (p:Suggestion)-[rel]-(r) WITH p, collect(r) as rs " + 
+				"MATCH (p:Suggestion)-[rel]-(r:Tag) WITH p, collect(r) as rs " + 
 				"RETURN ID(p) as id, p.name as name, p.title as title, p.keywords as keywords, p.description as description, rs as relationships"
 						)
 				.fetchAs(Suggestion.class).mappedBy((ts, r) ->
@@ -160,13 +166,22 @@ public class SuggestionService {
 		return suggestions;
 	}
 
-	public Suggestion createSuggestion(SimpleSuggestion simpleSuggestion) {
+	public Suggestion createSimpleSuggestion(SimpleSuggestion simpleSuggestion) {
+		String match = "MATCH (t1:Domain) Where t1.name='" + simpleSuggestion.getDomain() + "'";
+		String create = " CREATE (s:Suggestion {name:'" + simpleSuggestion.getName()+ "', title: '" + simpleSuggestion.getTitle() + "', keywords: '" + simpleSuggestion.getKeywords() + "', description: '" + simpleSuggestion.getDescription()+ "'})" + " CREATE (s)-[r:IS_LINKED_WITH]->(t1)";
+		String return_string = " RETURN ID(s) as id, s.name as name, s.title as title, s.keywords as keywords, s.description as description, s.relationship as relationship";;
+		int count = 0;
+		if (simpleSuggestion.getRelationships() != null) {
+			List<Map<String, String>> relationships = (List<Map<String, String>>) simpleSuggestion.getRelationships();
+		
+			for(Map<String, String> relationship : relationships) {
+				match = match + " MATCH (n" + count + ") where id(n" + count + ") = " + relationship.get("value");
+				create = create + " CREATE (s)-[rel"+ count + ":IS_LINKED_WITH]->(n" + count + ")";
+				count ++;
+			}
+		}
 
-		//Create a new suggestion
-		String queryString = "MATCH (t1:Domain) Where t1.name='Retail'"+
-				" CREATE (s:Suggestion {name:'" + simpleSuggestion.getName()+ "', title: '" + simpleSuggestion.getTitle() + "', keywords: '" + simpleSuggestion.getKeywords() + "', description: '" + simpleSuggestion.getDescription()+ "'})" + 
-				" CREATE (s)-[r:IS_LINKED_WITH]->(t1)" +
-				" RETURN ID(s) as id, s.name as name, s.title as title, s.keywords as keywords, s.description as description, s.relationship as relationship";
+		String queryString = match + create + return_string;
 		List<Suggestion> list = (List<Suggestion>) this.neo4jClient
 				.query(queryString)
 				.fetchAs(Suggestion.class).mappedBy((ts, r) ->
@@ -182,7 +197,7 @@ public class SuggestionService {
 			Suggestion s = list.get(0);
 			Collection<Suggestion> a =		this.neo4jClient
 					.query("" +
-							"MATCH (p:Suggestion)-[rel]-(r) WITH p, collect(r) as rs where ID(p)=" + s.getId() +  
+							"MATCH (p:Suggestion)-[rel]-(r:Tag) WITH p, collect(r) as rs where ID(p)=" + s.getId() +  
 							" RETURN ID(p) as id, p.name as name, p.title as title, p.keywords as keywords, p.description as description, rs as relationships"
 							)
 					.fetchAs(Suggestion.class).mappedBy((ts, r) ->
@@ -192,10 +207,9 @@ public class SuggestionService {
 							(r.get("keywords").asString()), 
 							(r.get("description").asString()),
 							(r.get("relationships").asList((rel) -> 
-							new Relationship((( (List<String>)((InternalNode) rel.asEntity() ).labels())!=null ? ((List<String>)((InternalNode) rel.asEntity() ).labels()).get(0):null),
-									rel.get("name").asString())))
-
-							)).all();
+							new Relationship((( (List<String>)((InternalNode) rel.asEntity() ).labels())!=null ? rel.get("name").asString():null),
+									Long.toString(((InternalNode) rel.asEntity() ).id()))))
+					)).all();
 			System.out.println(a);
 			return (new ArrayList<Suggestion>(a)).get(0);
 		}
@@ -203,6 +217,16 @@ public class SuggestionService {
 	}
 
 	public Suggestion updateSuggestion(Suggestion suggestion) {
+		List<String> newTagIds = new ArrayList<String>();
+		List<String> oldTagIds = new ArrayList<String>();
+		if(suggestion.getRelationships() != null ) {
+			List<Map> relationships = (List<Map>)suggestion.getRelationships();
+			
+			for(Map rel : relationships) {
+				newTagIds.add(rel.get("value").toString());
+			}
+						
+		}
 		String queryString = "MATCH (p:Suggestion)" + 
 				" where id(p) = " + suggestion.getId() +
 				" set p ={name:'" +suggestion.getName()+"', title: '" + suggestion.getTitle() +"', keywords: '" + suggestion.getKeywords() +"', description: '" + suggestion.getDescription()+"'}" +
@@ -222,7 +246,7 @@ public class SuggestionService {
 			Suggestion s = list.get(0);
 			Collection<Suggestion> a =		this.neo4jClient
 					.query("" +
-							"MATCH (p:Suggestion)-[rel]-(r) WITH p, collect(r) as rs where ID(p)=" + s.getId() +  
+							"MATCH (p:Suggestion)-[rel]-(r:Tag) WITH p, collect(r) as rs where ID(p)=" + s.getId() +  
 							" RETURN ID(p) as id, p.name as name, p.title as title, p.keywords as keywords, p.description as description, rs as relationships"
 							)
 					.fetchAs(Suggestion.class).mappedBy((ts, r) ->
@@ -232,12 +256,21 @@ public class SuggestionService {
 							(r.get("keywords").asString()), 
 							(r.get("description").asString()),
 							(r.get("relationships").asList((rel) -> 
-							new Relationship((( (List<String>)((InternalNode) rel.asEntity() ).labels())!=null ? ((List<String>)((InternalNode) rel.asEntity() ).labels()).get(0):null),
-									rel.get("name").asString())))
+							new Relationship((( (List<String>)((InternalNode) rel.asEntity() ).labels())!=null ?rel.get("name").asString():null),
+									Long.toString(((InternalNode) rel.asEntity() ).id()))))
 
 							)).all();
-			System.out.println(a);
-			return (new ArrayList<Suggestion>(a)).get(0);
+			
+			Suggestion currentSuggestion = (new ArrayList<Suggestion>(a)).get(0);
+			if(currentSuggestion.getRelationships() != null ) {
+				currentSuggestion = dettachAllTagsFromSuggestion(currentSuggestion.getId());
+			}
+			
+			if(!newTagIds.isEmpty()) {
+				currentSuggestion = attachMultiTagsIntoSuggestion(currentSuggestion.getId(), newTagIds);
+			}
+			
+			return currentSuggestion;
 		}
 		return null;
 	}
@@ -272,7 +305,7 @@ public class SuggestionService {
 
 	}
 
-	public Suggestion attachSuggestion(String sugId, String tagId) {
+	public Suggestion attachTagIntoSuggestion(String sugId, String tagId) {
 		String queryString = " MATCH (s) where id(s) = " + sugId + 
 				" MATCH (n) where id(n) = " + tagId +
 				" CREATE (s)-[rel:IS_LINKED_WITH]->(n)" +
@@ -302,8 +335,48 @@ public class SuggestionService {
 							(r.get("keywords").asString()), 
 							(r.get("description").asString()),
 							(r.get("relationships").asList((rel) -> 
-							new Relationship((( (List<String>)((InternalNode) rel.asEntity() ).labels())!=null ? ((List<String>)((InternalNode) rel.asEntity() ).labels()).get(0):null),
-									rel.get("name").asString())))
+							new Relationship((( (List<String>)((InternalNode) rel.asEntity() ).labels())!=null ? rel.get("name").asString():null),
+									Long.toString(((InternalNode) rel.asEntity() ).id()))))
+
+							)).all();
+			System.out.println(a);
+			return (new ArrayList<Suggestion>(a)).get(0);
+		}
+		return null;
+	}
+	
+	public Suggestion dettachTagFromSuggestion(String sugId, String tagId) {
+		String queryString = " MATCH (s) where id(s) = " + sugId + 
+				" MATCH (n) where id(n) = " + tagId +
+				" DELETE (s)-[rel:IS_LINKED_WITH]->(n)" +
+				" RETURN ID(s) as id, s.name as name, s.title as title, s.keywords as keywords, s.description as description";
+		List<Suggestion> list = (List<Suggestion>) this.neo4jClient
+				.query(queryString)
+				.fetchAs(Suggestion.class).mappedBy((ts, r) ->
+				new Suggestion((r.get("id") + ""),
+						(r.get("name").asString()), 
+						(r.get("title").asString()), 
+						(r.get("keywords").asString()), 
+						(r.get("description").asString()),
+						(Object) (r.get("relationships"))
+						)).all();
+		if(list !=null && !list.isEmpty()) {
+			// Get the created suggestion
+			Suggestion s = list.get(0);
+			Collection<Suggestion> a =		this.neo4jClient
+					.query("" +
+							"MATCH (p:Suggestion)-[rel]-(r) WITH p, collect(r) as rs where ID(p)=" + s.getId() +  
+							" RETURN ID(p) as id, p.name as name, p.title as title, p.keywords as keywords, p.description as description, rs as relationships"
+							)
+					.fetchAs(Suggestion.class).mappedBy((ts, r) ->
+					new Suggestion((r.get("id") + ""),
+							(r.get("name").asString()), 
+							(r.get("title").asString()), 
+							(r.get("keywords").asString()), 
+							(r.get("description").asString()),
+							(r.get("relationships").asList((rel) -> 
+							new Relationship((( (List<String>)((InternalNode) rel.asEntity() ).labels())!=null ? rel.get("name").asString():null),
+									Long.toString(((InternalNode) rel.asEntity() ).id()))))
 
 							)).all();
 			System.out.println(a);
@@ -312,7 +385,7 @@ public class SuggestionService {
 		return null;
 	}
 
-	public Suggestion attachMultiTags(String sugId, List<String> tagIds) {
+	public Suggestion attachMultiTagsIntoSuggestion(String sugId, List<String> tagIds) {
 
 		String match = "MATCH (s) where id(s) = " + sugId;
 		String create = "";
@@ -321,7 +394,7 @@ public class SuggestionService {
 
 		for(String tagId : tagIds) {
 			match = match + " MATCH (n" + count + ") where id(n" + count + ") = " + tagId;
-			create = create + " CREATE (s)-[rel:IS_LINKED_WITH]->(n" + count + ")";
+			create = create + " CREATE (s)-[rel" + count + ":IS_LINKED_WITH]->(n" + count + ")";
 			return_string = " RETURN ID(s) as id, s.name as name, s.title as title, s.keywords as keywords, s.description as description";
 			count ++;
 		}
@@ -357,12 +430,99 @@ public class SuggestionService {
 							(r.get("keywords").asString()), 
 							(r.get("description").asString()),
 							(r.get("relationships").asList((rel) -> 
-							new Relationship((( (List<String>)((InternalNode) rel.asEntity() ).labels())!=null ? ((List<String>)((InternalNode) rel.asEntity() ).labels()).get(0):null),
-									rel.get("name").asString())))
+							new Relationship((( (List<String>)((InternalNode) rel.asEntity() ).labels())!=null ? rel.get("name").asString():null),
+									Long.toString(((InternalNode) rel.asEntity() ).id()))))
 
 							)).all();
 			System.out.println(a);
 			return (new ArrayList<Suggestion>(a)).get(0);
+		}
+
+		return null;
+	}
+	
+	public Suggestion dettachMultiTagsFromSuggestion(String sugId, List<String> tagIds) {
+
+		String match = "MATCH (s) where id(s) = " + sugId;
+		String create = "";
+		String return_string = "";
+		int count = 0;
+
+		for(String tagId : tagIds) {
+			match = match + " MATCH (n" + count + ") where id(n" + count + ") = " + tagId;
+			create = create + " DELETE (s)-[rel:IS_LINKED_WITH]->(n" + count + ")";
+			return_string = " RETURN ID(s) as id, s.name as name, s.title as title, s.keywords as keywords, s.description as description";
+			count ++;
+		}
+
+		String queryString = match + create + return_string;
+
+		//		String queryString = " MATCH (s) where id(s) = " + sugId + 
+		//	             " MATCH (n) where id(n) = " + tagId +
+		//	             " CREATE (s)-[rel:IS_LINKED_WITH]->(n)" +
+		//	             " RETURN ID(s) as id, s.name as name, s.title as title, s.description as description";
+		List<Suggestion> list = (List<Suggestion>) this.neo4jClient
+				.query(queryString)
+				.fetchAs(Suggestion.class).mappedBy((ts, r) ->
+				new Suggestion((r.get("id") + ""),
+						(r.get("name").asString()), 
+						(r.get("title").asString()), 
+						(r.get("keywords").asString()), 
+						(r.get("description").asString()),
+						(Object) (r.get("relationships"))
+						)).all();
+		if(list !=null && !list.isEmpty()) {
+			// Get the created suggestion
+			Suggestion s = list.get(0);
+			Collection<Suggestion> a =		this.neo4jClient
+					.query("" +
+							"MATCH (p:Suggestion)-[rel]-(r) WITH p, collect(r) as rs where ID(p)=" + s.getId() +  
+							" RETURN ID(p) as id, p.name as name, p.title as title, p.keywords as keywords, p.description as description, rs as relationships"
+							)
+					.fetchAs(Suggestion.class).mappedBy((ts, r) ->
+					new Suggestion((r.get("id") + ""),
+							(r.get("name").asString()), 
+							(r.get("title").asString()), 
+							(r.get("keywords").asString()), 
+							(r.get("description").asString()),
+							(r.get("relationships").asList((rel) -> 
+							new Relationship((( (List<String>)((InternalNode) rel.asEntity() ).labels())!=null ? rel.get("name").asString():null),
+									Long.toString(((InternalNode) rel.asEntity() ).id()))))
+
+							)).all();
+			System.out.println(a);
+			return (new ArrayList<Suggestion>(a)).get(0);
+		}
+
+		return null;
+	}
+	
+	public Suggestion dettachAllTagsFromSuggestion(String sugId) {
+
+		String match = "MATCH (s:Suggestion) - [rel:IS_LINKED_WITH]->(t:Tag) where id(s) = " + sugId;
+		String delete = " DELETE rel";
+		String return_string = " RETURN ID(s) as id, s.name as name, s.title as title, s.keywords as keywords, s.description as description";
+
+		String queryString = match + delete + return_string;
+
+		//		String queryString = " MATCH (s) where id(s) = " + sugId + 
+		//	             " MATCH (n) where id(n) = " + tagId +
+		//	             " CREATE (s)-[rel:IS_LINKED_WITH]->(n)" +
+		//	             " RETURN ID(s) as id, s.name as name, s.title as title, s.description as description";
+		List<Suggestion> list = (List<Suggestion>) this.neo4jClient
+				.query(queryString)
+				.fetchAs(Suggestion.class).mappedBy((ts, r) ->
+				new Suggestion((r.get("id") + ""),
+						(r.get("name").asString()), 
+						(r.get("title").asString()), 
+						(r.get("keywords").asString()), 
+						(r.get("description").asString()),
+						(Object) (r.get("relationships"))
+						)).all();
+		if(list !=null && !list.isEmpty()) {
+			// Get the created suggestion
+			Suggestion s = list.get(0);
+			return list.get(0);
 		}
 
 		return null;
@@ -384,6 +544,65 @@ public class SuggestionService {
 
 		return (List<Domain>) result;
 
+	}
+	
+	public Domain createDomain(String domainName) {
+		
+		return null;
+		
+	}
+	
+	public JSONObject createTag(String domainName, String tagName) {
+		
+		JSONObject returnItem = new JSONObject();
+		if(checkExistingTags(getAllTags(domainName), tagName)) {
+			returnItem.put("message", "This tag is already existed!");
+			returnItem.put("code", "2");
+			
+			return returnItem;
+		}
+		
+		String match = "MATCH (d:Domain) Where d.name='" + domainName + "'";
+		String create = " CREATE (t:Tag {name:'" + tagName + "'})" + " CREATE (t)-[r:IS_LINKED_WITH]->(d)";
+		String return_string = " RETURN ID(t) as id, t.name as name";
+		
+		String queryString = match + create + return_string;
+		
+		List<Tag> list =  (List<Tag>) this.neo4jClient
+				.query(queryString)
+				.fetchAs(Tag.class).mappedBy((ts, r) ->
+				new Tag(r.get("id") + "", 
+						r.get("name").asString(),
+						r.get("name").asString()))
+				.all();
+		if(list !=null && !list.isEmpty()) {
+			// Get the created suggestion
+			Tag tag = list.get(0);
+			returnItem.put("message", "A new task is created successfully");
+			returnItem.put("code", "1");
+			returnItem.put("tag", tag);
+			return returnItem;
+		}
+		
+		returnItem.put("message", "Error");
+		returnItem.put("code", "0");
+		return returnItem;
+	}
+	
+	public Tag findATag(String domainName, String tagName) {
+		
+		return null;
+	}
+	
+	private Boolean checkExistingTags(List<Tag> tags, String tagName) {
+		if(tags != null && tagName != null) {
+			for(Tag tag : tags) {
+				if(StringUtils.upperCase(tag.getName()).equals(StringUtils.upperCase(tagName))) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 }
