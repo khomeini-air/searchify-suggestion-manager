@@ -1,7 +1,7 @@
 package com.searchify.suggestion.services;
 
 import com.searchify.config.test.SearchifyApplicationContextTestConfig;
-import com.searchify.suggestion.entity.openai.CompletionRequest;
+import com.searchify.suggestion.api.request.CompletionRequest;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterAll;

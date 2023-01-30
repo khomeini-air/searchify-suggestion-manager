@@ -1,6 +1,6 @@
 package com.searchify.suggestion.services;
 
-import com.searchify.suggestion.entity.openai.CompletionRequest;
+import com.searchify.suggestion.api.request.CompletionRequest;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;

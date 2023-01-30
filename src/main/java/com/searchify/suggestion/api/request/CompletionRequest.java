@@ -1,4 +1,4 @@
-package com.searchify.suggestion.entity.openai;
+package com.searchify.suggestion.api.request;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

@@ -1,11 +1,11 @@
-package com.searchify.suggestion.controllers;
+package com.searchify.suggestion.api.controllers;
 
 import com.searchify.suggestion.entity.Domain;
 import com.searchify.suggestion.entity.RequestTagList;
 import com.searchify.suggestion.entity.SimpleSuggestion;
 import com.searchify.suggestion.entity.Suggestion;
 import com.searchify.suggestion.entity.Tag;
-import com.searchify.suggestion.entity.openai.CompletionRequest;
+import com.searchify.suggestion.api.request.CompletionRequest;
 import com.searchify.suggestion.services.DeepaiService;
 import com.searchify.suggestion.services.OpenAIService;
 import com.searchify.suggestion.services.SuggestionService;
