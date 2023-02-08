@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -26,5 +27,6 @@ public class CompletionRequest {
 
     @NotNull
     @Min(1)
+    @Max(255)
     private Integer maxTokens;
 }

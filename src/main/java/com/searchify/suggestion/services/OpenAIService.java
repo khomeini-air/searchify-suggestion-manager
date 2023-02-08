@@ -2,18 +2,15 @@ package com.searchify.suggestion.services;
 
 import com.searchify.suggestion.api.request.CompletionRequest;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClient.RequestBodySpec;
-import org.springframework.web.reactive.function.client.WebClient.RequestHeadersSpec;
-import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
-import org.springframework.web.reactive.function.client.WebClient.UriSpec;
-import reactor.core.publisher.Mono;
 
-import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Setter
@@ -27,26 +24,17 @@ public class OpenAIService {
     @Value("${integration.python.openai.text.httprequest.bodytemplate}")
     private String bodyTemplate;
 
+    @Autowired
+    private WebClientService webClientService;
+
     public String generateText(final CompletionRequest input) {
-        final WebClient client = WebClient.builder()
-                .baseUrl(baseUrl)
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .build();
-
-        // Preparing request
-        final UriSpec<RequestBodySpec> uriSpec = client.post();
-        final RequestBodySpec bodySpec = uriSpec.uri(textPath);
-        final RequestHeadersSpec headersSpec = bodySpec.bodyValue(genBodyText(input));
-
-        // Execute the request and return
-        final ResponseSpec responseSpec = headersSpec
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON)
-                .acceptCharset(StandardCharsets.UTF_8)
-                .retrieve();
-
-        final Mono<String> response = responseSpec.bodyToMono(String.class);
-        return response.block();
+        return webClientService.retrieve(
+                baseUrl,
+                uriBuilder -> uriBuilder.path(textPath).build(),
+                HttpMethod.POST,
+                Map.of(HttpHeaders.CONTENT_TYPE, List.of(MediaType.APPLICATION_JSON_VALUE)),
+                List.of(MediaType.APPLICATION_JSON),
+                genBodyText(input));
     }
 
     private String genBodyText(final CompletionRequest input) {

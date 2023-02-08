@@ -2,22 +2,26 @@ package com.searchify.suggestion.services;
 
 import com.searchify.config.test.SearchifyApplicationContextTestConfig;
 import com.searchify.suggestion.api.request.CompletionRequest;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = SearchifyApplicationContextTestConfig.class)
@@ -26,27 +30,30 @@ class OpenAIServiceTest {
     @Autowired
     private OpenAIService openAIService;
 
-    private static MockWebServer webServer;
+    @MockBean
+    private WebClientService webClientService;
 
-    @BeforeAll
-    static void setUp() throws IOException {
-        webServer = new MockWebServer();
-        webServer.start();
-    }
+    @Value("${integration.python.openai.base.url}")
+    private String baseUrl;
 
-    @AfterAll
-    static void tearDown() throws IOException {
-        webServer.shutdown();
-    }
+    @Value("${integration.python.openai.text.httprequest.bodytemplate}")
+    private String bodyTemplate;
 
     @Test
     void generateTextSuccess() throws InterruptedException {
-        final CompletionRequest userRequest = new CompletionRequest("test type", "finance", 25);
+        final CompletionRequest request = new CompletionRequest("test type", "finance", 25);
+        final String body = String.format(bodyTemplate, request.getWrittenType(), request.getDomain(), request.getMaxTokens());
         final String mockResponse = "{\"suggestions\":\"This is indeed only mock response\"}";
 
-        openAIService.setBaseUrl(String.format("localhost:%s", webServer.getPort()));
-        webServer.enqueue(new MockResponse().setBody(mockResponse).addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON));
-        final String aiText = openAIService.generateText(userRequest);
+        when(webClientService.retrieve(
+                eq(baseUrl),
+                any(Function.class),
+                eq(HttpMethod.POST),
+                eq(Map.of(HttpHeaders.CONTENT_TYPE, List.of(MediaType.APPLICATION_JSON_VALUE))),
+                eq(List.of(MediaType.APPLICATION_JSON)),
+                eq(body)
+        )).thenReturn(mockResponse);
+        final String aiText = openAIService.generateText(request);
 
         assertEquals(mockResponse, aiText);
     }
