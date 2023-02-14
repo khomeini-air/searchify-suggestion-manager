@@ -5,10 +5,9 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum SemrushPeriodEnum {
-    MONTH(1),
-    SEMESTER(6),
-    YEAR(12);
+public enum SemrushTrafficType {
+    ORGANIC("organic"),
+    PAID("paid");
 
-    private int length;
+    private String type;
 }

@@ -1,13 +1,21 @@
 package com.searchify.suggestion.services;
 
 import com.searchify.config.test.SearchifyApplicationContextTestConfig;
+import com.searchify.suggestion.entity.semrush.enums.SemrushTrafficChannel;
+import com.searchify.suggestion.entity.semrush.enums.SemrushTrafficType;
 import com.searchify.suggestion.entity.semrush.request.SemrushOrganicCompetitorRequest;
 import com.searchify.suggestion.entity.semrush.request.SemrushTopPagesRequest;
+import com.searchify.suggestion.entity.semrush.request.SemrushTopSubdomainRequest;
+import com.searchify.suggestion.entity.semrush.request.SemrushTopSubfolderRequest;
+import com.searchify.suggestion.entity.semrush.request.SemrushTrafficSourceRequest;
 import com.searchify.suggestion.entity.semrush.request.SemrushTrafficSummaryRequest;
 import com.searchify.suggestion.entity.semrush.response.SemrushKDIResponse;
 import com.searchify.suggestion.entity.semrush.response.SemrushKeywordOverviewResponse;
 import com.searchify.suggestion.entity.semrush.response.SemrushOrganicCompetitorResponse;
 import com.searchify.suggestion.entity.semrush.response.SemrushTopPagesResponse;
+import com.searchify.suggestion.entity.semrush.response.SemrushTopSubdomainResponse;
+import com.searchify.suggestion.entity.semrush.response.SemrushTopSubfolderResponse;
+import com.searchify.suggestion.entity.semrush.response.SemrushTrafficSourceResponse;
 import com.searchify.suggestion.entity.semrush.response.SemrushTrafficSummaryResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
@@ -129,14 +137,14 @@ class SemrushServiceTest {
     void getTrafficSummarySuccess() {
         final SemrushTrafficSummaryRequest request = new SemrushTrafficSummaryRequest(List.of("golang.org","blog.golang.org","tour.golang.org/welcome/"),
                 YearMonth.of(2023, 2), "CA");
-        final String semrushResponse = "target;visits;users\n" +
-                "golang.org;4491179;1400453\n" +
-                "blog.golang.org;402104;204891\n" +
-                "tour.golang.org/welcome/;10131;11628";
+        final String semrushResponse = "target;visits;desktop_visits;mobile_visits;pages_per_visit;desktop_pages_per_visit;mobile_pages_per_visit;bounce_rate;desktop_bounce_rate;mobile_bounce_rate;users\n" +
+                "golang.org;4491179;1400453;53313;23133;958;953;9.2;4.3;1.5;1400453\n" +
+                "blog.golang.org;402104;204891;23324;11243;892;789;6.3;2.2;0.7;892894\n" +
+                "tour.golang.org/welcome/;10131;11628;11234;14324;112;291;2.9;2.1;0.5;308403";
         final List<SemrushTrafficSummaryResponse> result = new ArrayList<>();
-        result.add(new SemrushTrafficSummaryResponse("golang.org", 4491179, 1400453));
-        result.add(new SemrushTrafficSummaryResponse("blog.golang.org", 402104, 204891));
-        result.add(new SemrushTrafficSummaryResponse("tour.golang.org/welcome/", 10131, 11628));
+        result.add(new SemrushTrafficSummaryResponse("golang.org", 4491179, 1400453,53313,23133,958,953,9.2,4.3,1.5,1400453));
+        result.add(new SemrushTrafficSummaryResponse("blog.golang.org", 402104, 204891,23324,11243,892,789,6.3,2.2,0.7,892894));
+        result.add(new SemrushTrafficSummaryResponse("tour.golang.org/welcome/", 10131, 11628,11234,14324,112,291,2.9,2.1,0.5,308403));
 
         when(webClientService.retrieve(
                 eq(apiBaseUrl),
@@ -172,5 +180,78 @@ class SemrushServiceTest {
         )).thenReturn(semrushResponse);
 
         Assertions.assertEquals(result, semrushService.getTopPages(request));
+    }
+
+    @Test
+    void getTopFolderSuccess() {
+        final SemrushTopSubfolderRequest request = new SemrushTopSubfolderRequest("amazon.com",YearMonth.of(2022, 12), 3);
+        final String semrushResponse = "subfolder;display_date;traffic_share;unique_pageviews\n" +
+                "/sch/;2022-12-01;9.28;173201982\n" +
+                "/mobile/;2022-12-01;3.91;33186275\n" +
+                "/mye/;2022-12-01;3.19;76893681";
+        final List<SemrushTopSubfolderResponse> result = new ArrayList<>();
+        result.add(new SemrushTopSubfolderResponse("/sch/", LocalDate.of(2022, 12, 01), 9.28, 173201982));
+        result.add(new SemrushTopSubfolderResponse("/mobile/", LocalDate.of(2022, 12, 01), 3.91, 33186275));
+        result.add(new SemrushTopSubfolderResponse("/mye/", LocalDate.of(2022, 12, 01), 3.19, 76893681));
+
+        when(webClientService.retrieve(
+                eq(apiBaseUrl),
+                any(Function.class),
+                eq(HttpMethod.GET),
+                eq(Collections.emptyMap()),
+                eq(List.of(MediaType.valueOf("text/csv"))),
+                eq(StringUtils.EMPTY)
+        )).thenReturn(semrushResponse);
+
+        Assertions.assertEquals(result, semrushService.getTopSubfolders(request));
+    }
+
+    @Test
+    void getTopSubdomainrSuccess() {
+        final SemrushTopSubdomainRequest request = new SemrushTopSubdomainRequest("amazon.com",YearMonth.of(2022, 12), 0, 3);
+        final String semrushResponse = "subdomain;display_date;total_visits;desktop_share;mobile_share\n" +
+                "gaming.amazon.com;2022-12-01;24274866;51.9;48.1\n" +
+                "smile.amazon.com;2022-12-01;50300062;89.25;10.75\n" +
+                "console.aws.amazon.com;2022-12-01;14274172;65.55;34.45";
+        final List<SemrushTopSubdomainResponse> result = new ArrayList<>();
+        result.add(new SemrushTopSubdomainResponse("gaming.amazon.com", LocalDate.of(2022, 12, 01), 24274866, 51.9, 48.1));
+        result.add(new SemrushTopSubdomainResponse("smile.amazon.com", LocalDate.of(2022, 12, 01), 50300062, 89.25, 10.75));
+        result.add(new SemrushTopSubdomainResponse("console.aws.amazon.com", LocalDate.of(2022, 12, 01), 14274172, 65.55, 34.45));
+
+        when(webClientService.retrieve(
+                eq(apiBaseUrl),
+                any(Function.class),
+                eq(HttpMethod.GET),
+                eq(Collections.emptyMap()),
+                eq(List.of(MediaType.valueOf("text/csv"))),
+                eq(StringUtils.EMPTY)
+        )).thenReturn(semrushResponse);
+
+        Assertions.assertEquals(result, semrushService.getTopSubdomains(request));
+    }
+
+    @Test
+    void getTrafficSourceSuccess() {
+        final SemrushTrafficSourceRequest request = new SemrushTrafficSourceRequest("medium.com", YearMonth.of(2022, 12),
+                SemrushTrafficType.PAID, SemrushTrafficChannel.DIRECT, 0, 3);
+        final String semrushResponse = "from_target;display_date;traffic;channel;traffic_type\n" +
+        "phlap.net;2022-12-01;7025;referral;paid\n" +
+        "blackhatworld.com;2022-12-01;2342;referral;paid\n" +
+        "crunchyroll.com;2022-12-01;1873;referral;organic";
+        final List<SemrushTrafficSourceResponse> result = new ArrayList<>();
+        result.add(new SemrushTrafficSourceResponse("phlap.net", LocalDate.of(2022, 12, 01), 7025, "paid", "referral"));
+        result.add(new SemrushTrafficSourceResponse("blackhatworld.com", LocalDate.of(2022, 12, 01), 2342, "paid", "referral"));
+        result.add(new SemrushTrafficSourceResponse("crunchyroll.com", LocalDate.of(2022, 12, 01), 1873, "organic", "referral"));
+
+        when(webClientService.retrieve(
+                eq(apiBaseUrl),
+                any(Function.class),
+                eq(HttpMethod.GET),
+                eq(Collections.emptyMap()),
+                eq(List.of(MediaType.valueOf("text/csv"))),
+                eq(StringUtils.EMPTY)
+        )).thenReturn(semrushResponse);
+
+        Assertions.assertEquals(result, semrushService.getTrafficSources(request));
     }
 }

@@ -18,5 +18,13 @@ import lombok.ToString;
 public class TrafficSummaryResponse {
     private String target;
     private Integer visitAmount;
+    private Integer desktopVisits;
+    private Integer mobileVisits;
+    private Integer pagesPerVisit;
+    private Integer desktopPagesPerVisit;
+    private Integer mobilePagesPerVisit;
+    private Double bounceRate;
+    private Double desktopBbounceRate;
+    private Double mobileBbounceRate;
     private Integer userAmount;
 }
