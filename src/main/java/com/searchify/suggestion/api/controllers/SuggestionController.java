@@ -1,27 +1,29 @@
-package com.searchify.suggestion.controllers;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+package com.searchify.suggestion.api.controllers;
 
 import com.searchify.suggestion.entity.Domain;
 import com.searchify.suggestion.entity.RequestTagList;
 import com.searchify.suggestion.entity.SimpleSuggestion;
 import com.searchify.suggestion.entity.Suggestion;
 import com.searchify.suggestion.entity.Tag;
+import com.searchify.suggestion.api.request.CompletionRequest;
 import com.searchify.suggestion.services.DeepaiService;
+import com.searchify.suggestion.services.OpenAIService;
 import com.searchify.suggestion.services.SuggestionService;
 import com.searchify.suggestion.services.WordaiService;
-
 import net.minidev.json.JSONObject;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 class SuggestionController {
@@ -31,11 +33,13 @@ class SuggestionController {
 	private final WordaiService wordaiService;
 	
 	private final DeepaiService deepaiService;
+	private final OpenAIService openAIService;
 
-	SuggestionController(SuggestionService suggestionService, DeepaiService deepaiService, WordaiService wordaiService) {
+	SuggestionController(SuggestionService suggestionService, DeepaiService deepaiService, WordaiService wordaiService, OpenAIService openAIService) {
 		this.suggestionService = suggestionService;
 		this.deepaiService = deepaiService;
 		this.wordaiService = wordaiService;
+		this.openAIService = openAIService;
 	}
 
     @CrossOrigin
@@ -87,7 +91,16 @@ class SuggestionController {
 	List<String> generateWordAiText(@RequestBody Map<String, String> params) {
 		return wordaiService.generateText(params.get("text"));
 	}
-    
+
+	@CrossOrigin
+    @PostMapping("/openai/text")
+	public ResponseEntity<String> generateOpenAiText(final @Valid @RequestBody CompletionRequest completionRequest) {
+		return ResponseEntity
+				.ok()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(openAIService.generateText(completionRequest));
+	}
+
     @CrossOrigin
     @PostMapping("/suggestion/domain")
 	List<Suggestion> searchByDomain(@RequestBody Map<String, String> params) {

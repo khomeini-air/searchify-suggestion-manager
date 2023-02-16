@@ -1,4 +1,4 @@
-package com.searchify.suggestion.controllers;
+package com.searchify.suggestion.api.controllers;
 
 import java.util.List;
 
