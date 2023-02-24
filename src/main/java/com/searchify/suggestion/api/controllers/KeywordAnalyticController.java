@@ -1,10 +1,20 @@
 package com.searchify.suggestion.api.controllers;
 
 import com.searchify.suggestion.api.response.KDIResponse;
+import com.searchify.suggestion.api.response.KeywordBroadMatchResponse;
 import com.searchify.suggestion.api.response.KeywordOverviewResponse;
-import com.searchify.suggestion.entity.semrush.response.SemrushKDIResponse;
-import com.searchify.suggestion.entity.semrush.response.SemrushKeywordOverviewResponse;
-import com.searchify.suggestion.services.SemrushService;
+import com.searchify.suggestion.api.response.KeywordQuestionResponse;
+import com.searchify.suggestion.api.response.KeywordRelatedResponse;
+import com.searchify.suggestion.entity.semrush.request.SemrushKeywordBroadMatchRequest;
+import com.searchify.suggestion.entity.semrush.request.SemrushKeywordQuestionRequest;
+import com.searchify.suggestion.entity.semrush.request.SemrushKeywordRelatedRequest;
+import com.searchify.suggestion.entity.semrush.response.keyword.SemrushKDIResponse;
+import com.searchify.suggestion.entity.semrush.response.keyword.SemrushKeywordBroadMatchResponse;
+import com.searchify.suggestion.entity.semrush.response.keyword.SemrushKeywordOverviewResponse;
+import com.searchify.suggestion.entity.semrush.response.keyword.SemrushKeywordQuestionResponse;
+import com.searchify.suggestion.entity.semrush.response.keyword.SemrushKeywordRelatedResponse;
+import com.searchify.suggestion.services.SemrushKeywordService;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +22,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.constraints.NotEmpty;
-import java.time.YearMonth;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,29 +31,29 @@ import java.util.stream.Collectors;
 @RestController
 public class KeywordAnalyticController {
     @Autowired
-    private SemrushService semrushService;
+    private SemrushKeywordService semrushService;
 
     @GetMapping("/api/analytic/keyword/overview")
-    public ResponseEntity<KeywordOverviewResponse> getKeywordOverview(@NotEmpty @RequestParam final String phrase) {
-        final List<SemrushKeywordOverviewResponse> allResult = semrushService.getKeywordOverview(phrase);
-        if (allResult.isEmpty()) {
+    public ResponseEntity<List<KeywordOverviewResponse>> getKeywordOverview(@RequestParam final String phrase,
+                                                                            @RequestParam(required = false) final String database) {
+        final List<SemrushKeywordOverviewResponse> semrushResult = semrushService.getKeywordOverview(phrase, database);
+        if (semrushResult.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        final Integer searchVolume = allResult.stream().mapToInt(response -> response.getSearchVolume()).sum();
-        final Double cpc = allResult.stream().mapToDouble(response -> response.getCpc()).average().orElse(Double.NaN);
-        final YearMonth date = allResult.stream().findFirst().map(SemrushKeywordOverviewResponse::getDate).orElse(null);
-        final String keyword = allResult.stream().findFirst().map(SemrushKeywordOverviewResponse::getKeyword).orElse(null);
-
+        List<KeywordOverviewResponse> responses = semrushResult.stream().map(e -> new KeywordOverviewResponse(e.getDate(),
+                e.getDatabase(), e.getKeyword(), e.getSearchVolume(), e.getCpc(), e.getCompetition(), e.getResults(),
+                e.getSerpFeatures(), e.getTrends(), e.getKdi(), e.getIntent())).collect(Collectors.toList());
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(new KeywordOverviewResponse(date, keyword, searchVolume, cpc));
+                .body(responses);
     }
 
     @GetMapping("/api/analytic/keyword/kdi")
-    public ResponseEntity<List<KDIResponse>> getKDI(@RequestParam final String phrases) {
-        final List<SemrushKDIResponse> semrushResponse = semrushService.getKDI(Arrays.asList(phrases.split(";")));
+    public ResponseEntity<List<KDIResponse>> getKDI(@RequestParam final String phrases,
+                                                    @RequestParam final String database) {
+        final List<SemrushKDIResponse> semrushResponse = semrushService.getKDI(Arrays.asList(phrases.split(";")), database);
         if (semrushResponse.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -53,5 +63,65 @@ public class KeywordAnalyticController {
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(result);
+    }
+
+    @GetMapping("/api/analytic/keyword/broad-matches")
+    public ResponseEntity<List<KeywordBroadMatchResponse>> getKeywordBroadMatches(@RequestParam final String phrase,
+                                                                                  @RequestParam final String database,
+                                                                                  @RequestParam @Min(0) @Max(10000)
+                                                                                  @Schema(description = "Skip the specified number of result") final Integer offset,
+                                                                                  @RequestParam @Min(1) @Max(5000)
+                                                                                  @Schema(description = "The number of results returned") final Integer limit) {
+        final List<SemrushKeywordBroadMatchResponse> semrushResult = semrushService.getBroadMatch(new SemrushKeywordBroadMatchRequest(phrase, database, offset, limit));
+        if (semrushResult.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<KeywordBroadMatchResponse> responses = semrushResult.stream().map(e -> new KeywordBroadMatchResponse(e.getKeyword(),
+                e.getSearchVolume(), e.getKdi())).collect(Collectors.toList());
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(responses);
+    }
+
+    @GetMapping("/api/analytic/keyword/questions")
+    public ResponseEntity<List<KeywordQuestionResponse>> getKeywordQuestions(@RequestParam final String phrase,
+                                                                             @RequestParam final String database,
+                                                                             @RequestParam @Min(0) @Max(10000)
+                                                                             @Schema(description = "Skip the specified number of result") final Integer offset,
+                                                                             @RequestParam @Min(1) @Max(5000)
+                                                                             @Schema(description = "The number of results returned") final Integer limit) {
+        final List<SemrushKeywordQuestionResponse> semrushResult = semrushService.getQuestion(new SemrushKeywordQuestionRequest(phrase, database, offset, limit));
+        if (semrushResult.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<KeywordQuestionResponse> responses = semrushResult.stream().map(e -> new KeywordQuestionResponse(e.getKeyword(),
+                e.getSearchVolume(), e.getKdi())).collect(Collectors.toList());
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(responses);
+    }
+
+    @GetMapping("/api/analytic/keyword/related")
+    public ResponseEntity<List<KeywordRelatedResponse>> getKeywordRelated(@RequestParam final String phrase,
+                                                                          @RequestParam final String database,
+                                                                          @RequestParam @Min(0) @Max(10000)
+                                                                          @Schema(description = "Skip the specified number of result") final Integer offset,
+                                                                          @RequestParam @Min(1) @Max(5000)
+                                                                          @Schema(description = "The number of results returned") final Integer limit) {
+        final List<SemrushKeywordRelatedResponse> semrushResult = semrushService.getRelated(new SemrushKeywordRelatedRequest(phrase, database, offset, limit));
+        if (semrushResult.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<KeywordRelatedResponse> responses = semrushResult.stream().map(e -> new KeywordRelatedResponse(e.getKeyword(),
+                e.getSearchVolume(), e.getKdi())).collect(Collectors.toList());
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(responses);
     }
 }

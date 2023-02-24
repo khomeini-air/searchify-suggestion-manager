@@ -23,7 +23,7 @@ import com.searchify.suggestion.entity.semrush.response.SemrushTopSubdomainRespo
 import com.searchify.suggestion.entity.semrush.response.SemrushTopSubfolderResponse;
 import com.searchify.suggestion.entity.semrush.response.SemrushTrafficDestinationResponse;
 import com.searchify.suggestion.entity.semrush.response.SemrushTrafficSummaryResponse;
-import com.searchify.suggestion.services.SemrushService;
+import com.searchify.suggestion.services.SemrushTrafficService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 @RestController
 public class TrafficAnalyticController {
     @Autowired
-    private SemrushService semrushService;
+    private SemrushTrafficService semrushService;
 
     @GetMapping("/api/analytic/traffic/summary")
     public ResponseEntity<List<TrafficSummaryResponse>> getSummary(@RequestParam
@@ -120,9 +120,11 @@ public class TrafficAnalyticController {
                                                                        @RequestParam
                                                                        @DateTimeFormat(pattern = "yyyy-MM")
                                                                        @Schema(pattern = "yyyy-MM", example = "2023-02") final YearMonth displayDate,
+                                                                       @RequestParam @Min(0) @Max(10000)
+                                                                       @Schema(description = "Skip the specified number of result") final Integer offset,
                                                                        @RequestParam @Min(1) @Max(5000)
                                                                        @Schema(description = "The number of results returned") final Integer limit) {
-        final SemrushTopSubfolderRequest semrushRequest = new SemrushTopSubfolderRequest(target, displayDate, limit);
+        final SemrushTopSubfolderRequest semrushRequest = new SemrushTopSubfolderRequest(target, displayDate, offset, limit);
         final List<SemrushTopSubfolderResponse> semrushResponse = semrushService.getTopSubfolders(semrushRequest);
         if (semrushResponse.isEmpty()) {
             return ResponseEntity.notFound().build();

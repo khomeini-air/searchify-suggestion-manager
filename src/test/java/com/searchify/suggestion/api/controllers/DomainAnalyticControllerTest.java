@@ -2,7 +2,7 @@ package com.searchify.suggestion.api.controllers;
 
 import com.searchify.suggestion.entity.semrush.request.SemrushOrganicCompetitorRequest;
 import com.searchify.suggestion.entity.semrush.response.SemrushOrganicCompetitorResponse;
-import com.searchify.suggestion.services.SemrushService;
+import com.searchify.suggestion.services.SemrushTrafficService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -24,7 +24,7 @@ class DomainAnalyticControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private SemrushService semrushService;
+    private SemrushTrafficService semrushService;
 
     @Test
     void getOrganicCompetitorSuccess() throws Exception {

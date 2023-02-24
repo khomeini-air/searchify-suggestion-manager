@@ -13,14 +13,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.util.LinkedMultiValueMap;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -36,6 +34,9 @@ class OpenAIServiceTest {
     @Value("${integration.python.openai.base.url}")
     private String baseUrl;
 
+    @Value("${integration.python.openai.text.path}")
+    private String textPath;
+
     @Value("${integration.python.openai.text.httprequest.bodytemplate}")
     private String bodyTemplate;
 
@@ -46,12 +47,13 @@ class OpenAIServiceTest {
         final String mockResponse = "{\"suggestions\":\"This is indeed only mock response\"}";
 
         when(webClientService.retrieve(
-                eq(baseUrl),
-                any(Function.class),
-                eq(HttpMethod.POST),
-                eq(Map.of(HttpHeaders.CONTENT_TYPE, List.of(MediaType.APPLICATION_JSON_VALUE))),
-                eq(List.of(MediaType.APPLICATION_JSON)),
-                eq(body)
+                baseUrl,
+                textPath,
+                new LinkedMultiValueMap<>(),
+                HttpMethod.POST,
+                Map.of(HttpHeaders.CONTENT_TYPE, List.of(MediaType.APPLICATION_JSON_VALUE)),
+                List.of(MediaType.APPLICATION_JSON),
+                body
         )).thenReturn(mockResponse);
         final String aiText = openAIService.generateText(request);
 

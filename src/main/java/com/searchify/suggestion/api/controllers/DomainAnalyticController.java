@@ -3,7 +3,7 @@ package com.searchify.suggestion.api.controllers;
 import com.searchify.suggestion.api.response.OrganicCompetitorResponse;
 import com.searchify.suggestion.entity.semrush.request.SemrushOrganicCompetitorRequest;
 import com.searchify.suggestion.entity.semrush.response.SemrushOrganicCompetitorResponse;
-import com.searchify.suggestion.services.SemrushService;
+import com.searchify.suggestion.services.SemrushTrafficService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @RestController
 public class DomainAnalyticController {
     @Autowired
-    private SemrushService semrushService;
+    private SemrushTrafficService semrushService;
 
     @GetMapping("/api/analytic/domain/organiccompetitor")
     public ResponseEntity<List<OrganicCompetitorResponse>> getOrganicCompetitor(@RequestParam final String domain,
