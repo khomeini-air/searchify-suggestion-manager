@@ -1,8 +1,14 @@
 package com.searchify.suggestion.services;
 
 import com.searchify.config.test.SearchifyApplicationContextTestConfig;
+import com.searchify.suggestion.entity.semrush.request.SemrushKeywordBroadMatchRequest;
+import com.searchify.suggestion.entity.semrush.request.SemrushKeywordQuestionRequest;
+import com.searchify.suggestion.entity.semrush.request.SemrushKeywordRelatedRequest;
 import com.searchify.suggestion.entity.semrush.response.keyword.SemrushKDIResponse;
+import com.searchify.suggestion.entity.semrush.response.keyword.SemrushKeywordBroadMatchResponse;
 import com.searchify.suggestion.entity.semrush.response.keyword.SemrushKeywordOverviewResponse;
+import com.searchify.suggestion.entity.semrush.response.keyword.SemrushKeywordQuestionResponse;
+import com.searchify.suggestion.entity.semrush.response.keyword.SemrushKeywordRelatedResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -28,15 +34,25 @@ import java.util.stream.Collectors;
 
 import static com.searchify.suggestion.api.constant.SemrushConstants.CSV_SEPARATOR;
 import static com.searchify.suggestion.api.constant.SemrushConstants.DATABASE_DEFAULT;
-import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_KEYWORD_OVERVIEW;
 import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_KDI;
+import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_KEYWORD_OVERVIEW;
+import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_PHRASE_FULLSEARCH;
+import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_PHRASE_QUESTIONS;
+import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_PHRASE_RELATED;
 import static com.searchify.suggestion.api.constant.SemrushConstants.PATH_ROOT;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DATABASE;
+import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DISPLAY_LIMIT;
+import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DISPLAY_OFFSET;
+import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DISPLAY_SORT;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_EXPORT_COLUMNS;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_KEY;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_PHRASE;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_TYPE;
+import static com.searchify.suggestion.api.constant.SemrushConstants.SORT_ORDER_VOLUME;
+import static com.searchify.suggestion.api.constant.SemrushConstants.TYPE_PHRASE_FULLSEARCH;
 import static com.searchify.suggestion.api.constant.SemrushConstants.TYPE_PHRASE_KDI;
+import static com.searchify.suggestion.api.constant.SemrushConstants.TYPE_PHRASE_QUESTIONS;
+import static com.searchify.suggestion.api.constant.SemrushConstants.TYPE_PHRASE_RELATED;
 import static com.searchify.suggestion.api.constant.SemrushConstants.TYPE_PHRASE_THIS;
 import static org.mockito.Mockito.when;
 
@@ -116,7 +132,7 @@ class SemrushKeywordServiceTest {
                 params,
                 HttpMethod.GET,
                 Collections.emptyMap(),
-                List.of(MediaType.TEXT_HTML),
+                List.of(MediaType.TEXT_PLAIN),
                 StringUtils.EMPTY
         )).thenReturn(semrushResponse);
 
@@ -145,7 +161,7 @@ class SemrushKeywordServiceTest {
                 params,
                 HttpMethod.GET,
                 Collections.emptyMap(),
-                List.of(MediaType.TEXT_HTML),
+                List.of(MediaType.TEXT_PLAIN),
                 StringUtils.EMPTY
         )).thenReturn(semrushResponse);
 
@@ -175,10 +191,113 @@ class SemrushKeywordServiceTest {
                 params,
                 HttpMethod.GET,
                 Collections.emptyMap(),
-                List.of(MediaType.TEXT_HTML),
+                List.of(MediaType.TEXT_PLAIN),
                 StringUtils.EMPTY
         )).thenReturn(semrushResponse);
 
         Assertions.assertEquals(result, semrushService.getKDI(phrases, database));
+    }
+
+    @Test
+    void getKeywordBroadMatchesSuccess() {
+        final String phrase = "nike";
+        final String database = "us";
+        final Integer offset = 0;
+        final Integer limit = 3;
+        final SemrushKeywordBroadMatchRequest request = new SemrushKeywordBroadMatchRequest(phrase, database, offset, limit);
+        final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add(QUERY_PARAM_KEY, apiKey);
+        params.add(QUERY_PARAM_TYPE, TYPE_PHRASE_FULLSEARCH);
+        params.add(QUERY_PARAM_PHRASE, request.getPhrase());
+        params.add(QUERY_PARAM_EXPORT_COLUMNS, EXPORT_COLUMNS_PHRASE_FULLSEARCH);
+        params.add(QUERY_PARAM_DATABASE, request.getDatabase());
+        params.add(QUERY_PARAM_DISPLAY_OFFSET, String.valueOf(request.getOffset()));
+        params.add(QUERY_PARAM_DISPLAY_LIMIT, String.valueOf(request.getLimit()));
+        params.add(QUERY_PARAM_DISPLAY_SORT, SORT_ORDER_VOLUME);
+        final String semrushResponse = "Keyword;Search Volume;Keyword Difficulty Index\n" +
+                "nike;5000000;90";
+        final List<SemrushKeywordBroadMatchResponse> result = new ArrayList<>();
+        result.add(new SemrushKeywordBroadMatchResponse(phrase, 5000000l, 90d));
+
+        when(webClientService.retrieve(
+                apiBaseUrl,
+                PATH_ROOT,
+                params,
+                HttpMethod.GET,
+                Collections.emptyMap(),
+                List.of(MediaType.TEXT_PLAIN),
+                StringUtils.EMPTY
+        )).thenReturn(semrushResponse);
+
+        Assertions.assertEquals(result, semrushService.getBroadMatch(request));
+    }
+
+    @Test
+    void getKeywordQuestionsSuccess() {
+        final String phrase = "nike";
+        final String database = "us";
+        final Integer offset = 0;
+        final Integer limit = 3;
+        final SemrushKeywordQuestionRequest request = new SemrushKeywordQuestionRequest(phrase, database, offset, limit);
+        final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add(QUERY_PARAM_KEY, apiKey);
+        params.add(QUERY_PARAM_TYPE, TYPE_PHRASE_QUESTIONS);
+        params.add(QUERY_PARAM_PHRASE, request.getPhrase());
+        params.add(QUERY_PARAM_EXPORT_COLUMNS, EXPORT_COLUMNS_PHRASE_QUESTIONS);
+        params.add(QUERY_PARAM_DATABASE, request.getDatabase());
+        params.add(QUERY_PARAM_DISPLAY_OFFSET, String.valueOf(request.getOffset()));
+        params.add(QUERY_PARAM_DISPLAY_LIMIT, String.valueOf(request.getLimit()));
+        params.add(QUERY_PARAM_DISPLAY_SORT, SORT_ORDER_VOLUME);
+
+        final String semrushResponse = "Keyword;Search Volume;Keyword Difficulty Index\n" +
+                "nike;5000000;90";
+        final List<SemrushKeywordQuestionResponse> result = new ArrayList<>();
+        result.add(new SemrushKeywordQuestionResponse(phrase, 5000000l, 90d));
+
+        when(webClientService.retrieve(
+                apiBaseUrl,
+                PATH_ROOT,
+                params,
+                HttpMethod.GET,
+                Collections.emptyMap(),
+                List.of(MediaType.TEXT_PLAIN),
+                StringUtils.EMPTY
+        )).thenReturn(semrushResponse);
+
+        Assertions.assertEquals(result, semrushService.getQuestion(request));
+    }
+
+    @Test
+    void getKeywordRelatedSuccess() {
+        final String phrase = "nike";
+        final String database = "us";
+        final Integer offset = 0;
+        final Integer limit = 3;
+        final SemrushKeywordRelatedRequest request = new SemrushKeywordRelatedRequest(phrase, database, offset, limit);
+        final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add(QUERY_PARAM_KEY, apiKey);
+        params.add(QUERY_PARAM_TYPE, TYPE_PHRASE_RELATED);
+        params.add(QUERY_PARAM_PHRASE, request.getPhrase());
+        params.add(QUERY_PARAM_EXPORT_COLUMNS, EXPORT_COLUMNS_PHRASE_RELATED);
+        params.add(QUERY_PARAM_DATABASE, request.getDatabase());
+        params.add(QUERY_PARAM_DISPLAY_OFFSET, String.valueOf(request.getOffset()));
+        params.add(QUERY_PARAM_DISPLAY_LIMIT, String.valueOf(request.getLimit()));
+        params.add(QUERY_PARAM_DISPLAY_SORT, SORT_ORDER_VOLUME);
+        final String semrushResponse = "Keyword;Search Volume;Keyword Difficulty Index\n" +
+                "nike;5000000;90";
+        final List<SemrushKeywordRelatedResponse> result = new ArrayList<>();
+        result.add(new SemrushKeywordRelatedResponse(phrase, 5000000l, 90d));
+
+        when(webClientService.retrieve(
+                apiBaseUrl,
+                PATH_ROOT,
+                params,
+                HttpMethod.GET,
+                Collections.emptyMap(),
+                List.of(MediaType.TEXT_PLAIN),
+                StringUtils.EMPTY
+        )).thenReturn(semrushResponse);
+
+        Assertions.assertEquals(result, semrushService.getRelated(request));
     }
 }

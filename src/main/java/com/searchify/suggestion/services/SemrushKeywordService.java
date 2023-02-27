@@ -30,16 +30,22 @@ import static com.searchify.suggestion.api.constant.SemrushConstants.DATABASE_DE
 import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_KDI;
 import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_KEYWORD_OVERVIEW;
 import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_PHRASE_FULLSEARCH;
+import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_PHRASE_QUESTIONS;
+import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_PHRASE_RELATED;
 import static com.searchify.suggestion.api.constant.SemrushConstants.PATH_ROOT;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DATABASE;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DISPLAY_LIMIT;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DISPLAY_OFFSET;
+import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DISPLAY_SORT;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_EXPORT_COLUMNS;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_KEY;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_PHRASE;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_TYPE;
+import static com.searchify.suggestion.api.constant.SemrushConstants.SORT_ORDER_VOLUME;
 import static com.searchify.suggestion.api.constant.SemrushConstants.TYPE_PHRASE_FULLSEARCH;
 import static com.searchify.suggestion.api.constant.SemrushConstants.TYPE_PHRASE_KDI;
+import static com.searchify.suggestion.api.constant.SemrushConstants.TYPE_PHRASE_QUESTIONS;
+import static com.searchify.suggestion.api.constant.SemrushConstants.TYPE_PHRASE_RELATED;
 import static com.searchify.suggestion.api.constant.SemrushConstants.TYPE_PHRASE_THIS;
 import static com.searchify.suggestion.util.SemrushUtil.parseCsvResponseBody;
 
@@ -75,7 +81,7 @@ public class SemrushKeywordService {
                 params,
                 HttpMethod.GET,
                 Collections.emptyMap(),
-                List.of(MediaType.TEXT_HTML),
+                List.of(MediaType.TEXT_PLAIN),
                 StringUtils.EMPTY);
 
         return (List<SemrushKeywordOverviewResponse>) parseCsvResponseBody(responseBody, CSV_SEPARATOR, SemrushKeywordOverviewResponse.class);
@@ -95,7 +101,7 @@ public class SemrushKeywordService {
                 params,
                 HttpMethod.GET,
                 Collections.emptyMap(),
-                List.of(MediaType.TEXT_HTML),
+                List.of(MediaType.TEXT_PLAIN),
                 StringUtils.EMPTY);
 
         return (List<SemrushKDIResponse>) parseCsvResponseBody(responseBody, CSV_SEPARATOR, SemrushKDIResponse.class);
@@ -110,6 +116,7 @@ public class SemrushKeywordService {
         params.add(QUERY_PARAM_DATABASE, StringUtils.isEmpty(request.getDatabase()) ? DATABASE_DEFAULT : request.getDatabase());
         params.add(QUERY_PARAM_DISPLAY_OFFSET, String.valueOf(request.getOffset()));
         params.add(QUERY_PARAM_DISPLAY_LIMIT, String.valueOf(request.getLimit()));
+        params.add(QUERY_PARAM_DISPLAY_SORT, SORT_ORDER_VOLUME);
 
         final String responseBody = webClientService.retrieve(
                 apiBaseUrl,
@@ -117,7 +124,7 @@ public class SemrushKeywordService {
                 params,
                 HttpMethod.GET,
                 Collections.emptyMap(),
-                List.of(MediaType.TEXT_HTML),
+                List.of(MediaType.TEXT_PLAIN),
                 StringUtils.EMPTY);
 
         return (List<SemrushKeywordBroadMatchResponse>) parseCsvResponseBody(responseBody, CSV_SEPARATOR, SemrushKeywordBroadMatchResponse.class);
@@ -126,12 +133,13 @@ public class SemrushKeywordService {
     public List<SemrushKeywordQuestionResponse> getQuestion(@NotNull final SemrushKeywordQuestionRequest request) {
         final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add(QUERY_PARAM_KEY, apiKey);
-        params.add(QUERY_PARAM_TYPE, TYPE_PHRASE_FULLSEARCH);
+        params.add(QUERY_PARAM_TYPE, TYPE_PHRASE_QUESTIONS);
         params.add(QUERY_PARAM_PHRASE, request.getPhrase());
-        params.add(QUERY_PARAM_EXPORT_COLUMNS, EXPORT_COLUMNS_PHRASE_FULLSEARCH);
+        params.add(QUERY_PARAM_EXPORT_COLUMNS, EXPORT_COLUMNS_PHRASE_QUESTIONS);
         params.add(QUERY_PARAM_DATABASE, StringUtils.isEmpty(request.getDatabase()) ? DATABASE_DEFAULT : request.getDatabase());
         params.add(QUERY_PARAM_DISPLAY_OFFSET, String.valueOf(request.getOffset()));
         params.add(QUERY_PARAM_DISPLAY_LIMIT, String.valueOf(request.getLimit()));
+        params.add(QUERY_PARAM_DISPLAY_SORT, SORT_ORDER_VOLUME);
 
         final String responseBody = webClientService.retrieve(
                 apiBaseUrl,
@@ -139,7 +147,7 @@ public class SemrushKeywordService {
                 params,
                 HttpMethod.GET,
                 Collections.emptyMap(),
-                List.of(MediaType.TEXT_HTML),
+                List.of(MediaType.TEXT_PLAIN),
                 StringUtils.EMPTY);
 
         return (List<SemrushKeywordQuestionResponse>) parseCsvResponseBody(responseBody, CSV_SEPARATOR, SemrushKeywordQuestionResponse.class);
@@ -148,12 +156,13 @@ public class SemrushKeywordService {
     public List<SemrushKeywordRelatedResponse> getRelated(@NotNull final SemrushKeywordRelatedRequest request) {
         final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add(QUERY_PARAM_KEY, apiKey);
-        params.add(QUERY_PARAM_TYPE, TYPE_PHRASE_FULLSEARCH);
+        params.add(QUERY_PARAM_TYPE, TYPE_PHRASE_RELATED);
         params.add(QUERY_PARAM_PHRASE, request.getPhrase());
-        params.add(QUERY_PARAM_EXPORT_COLUMNS, EXPORT_COLUMNS_PHRASE_FULLSEARCH);
+        params.add(QUERY_PARAM_EXPORT_COLUMNS, EXPORT_COLUMNS_PHRASE_RELATED);
         params.add(QUERY_PARAM_DATABASE, StringUtils.isEmpty(request.getDatabase()) ? DATABASE_DEFAULT : request.getDatabase());
         params.add(QUERY_PARAM_DISPLAY_OFFSET, String.valueOf(request.getOffset()));
         params.add(QUERY_PARAM_DISPLAY_LIMIT, String.valueOf(request.getLimit()));
+        params.add(QUERY_PARAM_DISPLAY_SORT, SORT_ORDER_VOLUME);
 
         final String responseBody = webClientService.retrieve(
                 apiBaseUrl,
@@ -161,7 +170,7 @@ public class SemrushKeywordService {
                 params,
                 HttpMethod.GET,
                 Collections.emptyMap(),
-                List.of(MediaType.TEXT_HTML),
+                List.of(MediaType.TEXT_PLAIN),
                 StringUtils.EMPTY);
 
         return (List<SemrushKeywordRelatedResponse>) parseCsvResponseBody(responseBody, CSV_SEPARATOR, SemrushKeywordRelatedResponse.class);
