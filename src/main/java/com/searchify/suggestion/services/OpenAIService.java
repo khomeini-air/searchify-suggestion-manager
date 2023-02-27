@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
 
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,8 @@ public class OpenAIService {
     public String generateText(final CompletionRequest input) {
         return webClientService.retrieve(
                 baseUrl,
-                uriBuilder -> uriBuilder.path(textPath).build(),
+                textPath,
+                new LinkedMultiValueMap<>(),
                 HttpMethod.POST,
                 Map.of(HttpHeaders.CONTENT_TYPE, List.of(MediaType.APPLICATION_JSON_VALUE)),
                 List.of(MediaType.APPLICATION_JSON),

@@ -8,7 +8,7 @@ import com.searchify.suggestion.entity.semrush.response.SemrushTopPagesResponse;
 import com.searchify.suggestion.entity.semrush.response.SemrushTopSubdomainResponse;
 import com.searchify.suggestion.entity.semrush.response.SemrushTopSubfolderResponse;
 import com.searchify.suggestion.entity.semrush.response.SemrushTrafficSummaryResponse;
-import com.searchify.suggestion.services.SemrushService;
+import com.searchify.suggestion.services.SemrushTrafficService;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ class TrafficAnalyticControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private SemrushService semrushService;
+    private SemrushTrafficService semrushService;
 
     @Test
     void getSummarySuccess() throws Exception {
@@ -93,10 +93,11 @@ class TrafficAnalyticControllerTest {
     void getTopSubfolderSuccess() throws Exception {
         final String target = "amazon.com";
         final YearMonth displayDate = YearMonth.of(2022, 12);
+        final Integer offset = 0;
         final Integer limit = 3;
-        final String urlString = String.format("/api/analytic/traffic/top-subfolders?target=%s&displayDate=%s&limit=%s",
-                target, DateTimeFormatter.ofPattern("yyyy-MM").format(displayDate), limit);
-        final SemrushTopSubfolderRequest semrushRequest = new SemrushTopSubfolderRequest("amazon.com", displayDate, limit);
+        final String urlString = String.format("/api/analytic/traffic/top-subfolders?target=%s&displayDate=%s&offset=%s&limit=%s",
+                target, DateTimeFormatter.ofPattern("yyyy-MM").format(displayDate), offset, limit);
+        final SemrushTopSubfolderRequest semrushRequest = new SemrushTopSubfolderRequest("amazon.com", displayDate, offset, limit);
         final List<SemrushTopSubfolderResponse> semrushResponse = new ArrayList<>();
         semrushResponse.add(new SemrushTopSubfolderResponse("/sch/", LocalDate.of(2022, 12, 01), 9.28, 173201982));
         semrushResponse.add(new SemrushTopSubfolderResponse("/mobile/", LocalDate.of(2022, 12, 01), 3.91, 33186275));

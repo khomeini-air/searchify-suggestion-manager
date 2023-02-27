@@ -26,11 +26,18 @@ public class SemrushConstants {
     public static final String QUERY_PARAM_TRAFFIC_CHANNEL = "traffic_channel";
     public static final String QUERY_PARAM_COUNTRY = "country";
     public static final String QUERY_PARAM_SORT_ORDER = "sort_order";
-    public static final String TYPE_PHRASE_ALL = "phrase_all";
+    public static final String QUERY_PARAM_DISPLAY_SORT = "display_sort";
+    public static final String TYPE_PHRASE_THIS = "phrase_this";
     public static final String TYPE_PHRASE_KDI = "phrase_kdi";
+    public static final String TYPE_PHRASE_FULLSEARCH = "phrase_fullsearch";
+    public static final String TYPE_PHRASE_QUESTIONS = "phrase_questions";
+    public static final String TYPE_PHRASE_RELATED = "phrase_related";
     public static final String TYPE_DOMAIN_ORGANIC = "domain_organic_organic";
-    public static final String EXPORT_COLUMNS = "Dt,Db,Ph,Nq,Cp,Co";
+    public static final String EXPORT_COLUMNS_KEYWORD_OVERVIEW = "Dt,Db,Ph,Nq,Cp,Co,Nr,Td,Kd,Fk,In";
     public static final String EXPORT_COLUMNS_KDI = "Ph,Kd";
+    public static final String EXPORT_COLUMNS_PHRASE_FULLSEARCH = "Ph,Nq,Kd";
+    public static final String EXPORT_COLUMNS_PHRASE_QUESTIONS = "Ph,Nq,Kd";
+    public static final String EXPORT_COLUMNS_PHRASE_RELATED = "Ph,Nq,Kd";
     public static final String EXPORT_COLUMNS_ORGANIC = "Dn,Cr";
     public static final String EXPORT_COLUMNS_TRAFFIC_SUMMARY = "target,visits,desktop_visits,mobile_visits,pages_per_visit," +
             "desktop_pages_per_visit,mobile_pages_per_visit,bounce_rate,desktop_bounce_rate,mobile_bounce_rate,users";
@@ -43,6 +50,7 @@ public class SemrushConstants {
     public static final String EXPORT_COLUMNS_GEO_DISTRIBUTION = "geo,traffic,traffic_share,desktop_share,mobile_share,display_date";
     public static final String SORT_ORDER_TRAFFIC_DESTINATION = "traffic_share_desc";
     public static final String SORT_ORDER_GEO_DISTRIBUTION = "traffic_share_desc";
+    public static final String SORT_ORDER_VOLUME = "nq_desc";
     public static final String DATABASE_DEFAULT = "us";
     public static final Character CSV_SEPARATOR = ';';
     public static final Character COMMA_SEPARATOR = ',';
