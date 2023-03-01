@@ -26,7 +26,7 @@ public class SemrushTopSubdomainResponse extends SemrushBaseResponse {
     private LocalDate displayDate;
 
     @CsvBindByName(column = "total_visits")
-    private Integer totalVisits;
+    private Long totalVisits;
 
     @CsvBindByName(column = "desktop_share")
     private Double desktopShare;

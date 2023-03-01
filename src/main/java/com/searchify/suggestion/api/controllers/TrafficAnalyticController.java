@@ -60,7 +60,7 @@ public class TrafficAnalyticController {
 
         final List<TrafficSummaryResponse> result = semrushResponse.stream().map(e -> new TrafficSummaryResponse(e.getTarget(),
                 e.getVisits(), e.getDesktopVisits(), e.getMobileVisits(), e.getPagesPerVisit(), e.getDesktopPagesPerVisit(),
-                e.getMobilePagesPerVisit(), e.getBounceRate(), e.getDesktopBbounceRate(), e.getMobileBbounceRate(), e.getUserAmount())).collect(Collectors.toList());
+                e.getMobilePagesPerVisit(), e.getBounceRate(), e.getDesktopBbounceRate(), e.getMobileBbounceRate(), e.getUserAmount(), YearMonth.from(e.getDisplayDate()))).collect(Collectors.toList());
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -70,18 +70,19 @@ public class TrafficAnalyticController {
 
     @GetMapping("/api/analytic/traffic/summary/history")
     public ResponseEntity<List<TrafficSummaryResponse>> getSummaryHistory(@RequestParam
-                                                                          @Schema(description = "all target websites separated by comma",
-                                                                                  example = "ebay.com,google.com,apple.com") final String target,
+                                                                          @Schema(description = "a target website",
+                                                                                  example = "ebay.com") final String target,
                                                                           @RequestParam
                                                                           @Schema(description = "history period with only 3 valid values: " +
-                                                                                  "MONTH, SEMESTER, YEAR") final SemrushPeriod period) {
-        final List<SemrushTrafficSummaryResponse> semrushResponse = semrushService.getTrafficSummaryHistory(target, period);
+                                                                                  "MONTH, SEMESTER, YEAR") final SemrushPeriod period,
+                                                                          @RequestParam(required = false) @Schema(example = "us") final String countryCode) {
+        final List<SemrushTrafficSummaryResponse> semrushResponse = semrushService.getTrafficSummaryHistory(target, period, countryCode);
         if (semrushResponse.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         final List<TrafficSummaryResponse> result = semrushResponse.stream().map(e -> new TrafficSummaryResponse(e.getTarget(),
                 e.getVisits(), e.getDesktopVisits(), e.getMobileVisits(), e.getPagesPerVisit(), e.getDesktopPagesPerVisit(),
-                e.getMobilePagesPerVisit(), e.getBounceRate(), e.getDesktopBbounceRate(), e.getMobileBbounceRate(), e.getUserAmount())).collect(Collectors.toList());
+                e.getMobilePagesPerVisit(), e.getBounceRate(), e.getDesktopBbounceRate(), e.getMobileBbounceRate(), e.getUserAmount(), YearMonth.from(e.getDisplayDate()))).collect(Collectors.toList());
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)

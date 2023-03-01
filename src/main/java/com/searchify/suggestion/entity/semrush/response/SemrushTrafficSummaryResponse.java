@@ -1,12 +1,15 @@
 package com.searchify.suggestion.entity.semrush.response;
 
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvDate;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,6 +18,10 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class SemrushTrafficSummaryResponse extends SemrushBaseResponse{
+    @CsvBindByName(column = "display_date")
+    @CsvDate(value = "yyyy-MM-dd")
+    private LocalDate displayDate;
+
     @CsvBindByName(column = "target")
     private String target;
 
@@ -28,13 +35,13 @@ public class SemrushTrafficSummaryResponse extends SemrushBaseResponse{
     private Integer mobileVisits;
 
     @CsvBindByName(column = "pages_per_visit")
-    private Integer pagesPerVisit;
+    private Double pagesPerVisit;
 
     @CsvBindByName(column = "desktop_pages_per_visit")
-    private Integer desktopPagesPerVisit;
+    private Double desktopPagesPerVisit;
 
     @CsvBindByName(column = "mobile_pages_per_visit")
-    private Integer mobilePagesPerVisit;
+    private Double mobilePagesPerVisit;
 
     @CsvBindByName(column = "bounce_rate")
     private Double bounceRate;

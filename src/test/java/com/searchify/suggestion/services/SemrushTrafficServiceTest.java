@@ -1,6 +1,7 @@
 package com.searchify.suggestion.services;
 
 import com.searchify.config.test.SearchifyApplicationContextTestConfig;
+import com.searchify.suggestion.entity.semrush.enums.SemrushPeriod;
 import com.searchify.suggestion.entity.semrush.enums.SemrushTrafficChannel;
 import com.searchify.suggestion.entity.semrush.enums.SemrushTrafficType;
 import com.searchify.suggestion.entity.semrush.request.SemrushOrganicCompetitorRequest;
@@ -16,7 +17,6 @@ import com.searchify.suggestion.entity.semrush.response.SemrushTopSubfolderRespo
 import com.searchify.suggestion.entity.semrush.response.SemrushTrafficSourceResponse;
 import com.searchify.suggestion.entity.semrush.response.SemrushTrafficSummaryResponse;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +42,7 @@ import static com.searchify.suggestion.api.constant.SemrushConstants.COMMA_SEPAR
 import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_ORGANIC;
 import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_TRAFFIC_SOURCE;
 import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_TRAFFIC_SUMMARY;
+import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_TRAFFIC_TOP_PAGES;
 import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_TRAFFIC_TOP_SUBDOMAINS;
 import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_TRAFFIC_TOP_SUBFOLDERS;
 import static com.searchify.suggestion.api.constant.SemrushConstants.PATH_ROOT;
@@ -64,6 +65,7 @@ import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_TYPE;
 import static com.searchify.suggestion.api.constant.SemrushConstants.TYPE_DOMAIN_ORGANIC;
 import static com.searchify.suggestion.util.SemrushUtil.formatDisplayDate;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -89,6 +91,7 @@ class SemrushTrafficServiceTest {
     void getApiUnitBalanceSuccess() {
     }
 
+    @Test
     void getOrganicCompetitorSuccess() {
         final SemrushOrganicCompetitorRequest request = new SemrushOrganicCompetitorRequest("seobook.com", 0, 10);
         final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -115,27 +118,27 @@ class SemrushTrafficServiceTest {
                 StringUtils.EMPTY
         )).thenReturn(semrushResponse);
 
-        Assertions.assertEquals(result, semrushService.getOrganicCompetitor(request));
+        assertEquals(result, semrushService.getOrganicCompetitor(request));
     }
 
     @Test
     void getTrafficSummarySuccess() {
         final SemrushTrafficSummaryRequest request = new SemrushTrafficSummaryRequest(List.of("golang.org","blog.golang.org","tour.golang.org/welcome/"),
-                YearMonth.of(2023, 2), "CA");
+                YearMonth.of(2023, 1), "CA");
         final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add(QUERY_PARAM_KEY, apiKey);
         params.add(QUERY_PARAM_TARGETS, request.getTargets().stream().collect(Collectors.joining(COMMA_SEPARATOR.toString())));
         params.add(QUERY_PARAM_DISPLAY_DATE, formatDisplayDate(request.getDisplayDate()));
         params.add(QUERY_PARAM_COUNTRY, request.getCountry());
         params.add(QUERY_PARAM_EXPORT_COLUMNS, EXPORT_COLUMNS_TRAFFIC_SUMMARY);
-        final String semrushResponse = "target;visits;desktop_visits;mobile_visits;pages_per_visit;desktop_pages_per_visit;mobile_pages_per_visit;bounce_rate;desktop_bounce_rate;mobile_bounce_rate;users\n" +
-                "golang.org;4491179;1400453;53313;23133;958;953;9.2;4.3;1.5;1400453\n" +
-                "blog.golang.org;402104;204891;23324;11243;892;789;6.3;2.2;0.7;892894\n" +
-                "tour.golang.org/welcome/;10131;11628;11234;14324;112;291;2.9;2.1;0.5;308403";
+        final String semrushResponse = "display_date;target;visits;desktop_visits;mobile_visits;pages_per_visit;desktop_pages_per_visit;mobile_pages_per_visit;bounce_rate;desktop_bounce_rate;mobile_bounce_rate;users\n" +
+                "2023-01-01;golang.org;4491179;1400453;53313;23133;958;953;9.2;4.3;1.5;1400453\n" +
+                "2023-01-01;blog.golang.org;402104;204891;23324;11243;892;789;6.3;2.2;0.7;892894\n" +
+                "2023-01-01;tour.golang.org/welcome/;10131;11628;11234;14324;112;291;2.9;2.1;0.5;308403";
         final List<SemrushTrafficSummaryResponse> result = new ArrayList<>();
-        result.add(new SemrushTrafficSummaryResponse("golang.org", 4491179, 1400453,53313,23133,958,953,9.2,4.3,1.5,1400453));
-        result.add(new SemrushTrafficSummaryResponse("blog.golang.org", 402104, 204891,23324,11243,892,789,6.3,2.2,0.7,892894));
-        result.add(new SemrushTrafficSummaryResponse("tour.golang.org/welcome/", 10131, 11628,11234,14324,112,291,2.9,2.1,0.5,308403));
+        result.add(new SemrushTrafficSummaryResponse(LocalDate.of(2023, 01, 01), "golang.org", 4491179, 1400453,53313,23133d,958d,953d,9.2,4.3,1.5,1400453));
+        result.add(new SemrushTrafficSummaryResponse(LocalDate.of(2023, 01, 01), "blog.golang.org", 402104, 204891,23324,11243d,892d,789d,6.3,2.2,0.7,892894));
+        result.add(new SemrushTrafficSummaryResponse(LocalDate.of(2023, 01, 01), "tour.golang.org/welcome/", 10131, 11628,11234,14324d,112d,291d,2.9,2.1,0.5,308403));
 
         when(webClientService.retrieve(
                 apiBaseUrl,
@@ -147,7 +150,37 @@ class SemrushTrafficServiceTest {
                 StringUtils.EMPTY
         )).thenReturn(semrushResponse);
 
-        Assertions.assertEquals(result, semrushService.getTrafficSummary(request));
+        assertEquals(result, semrushService.getTrafficSummary(request));
+    }
+
+    @Test
+    void getTrafficSummaryHistorySuccess() {
+        final String target = "ebay.com";
+        final SemrushPeriod period = SemrushPeriod.MONTH;
+        final String countryCode = "us";
+        final YearMonth yearMonthNow = YearMonth.now();
+
+        final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add(QUERY_PARAM_KEY, apiKey);
+        params.add(QUERY_PARAM_TARGETS, target);
+        params.add(QUERY_PARAM_DISPLAY_DATE, formatDisplayDate(yearMonthNow.minusMonths(2)));
+        params.add(QUERY_PARAM_COUNTRY, countryCode);
+        params.add(QUERY_PARAM_EXPORT_COLUMNS, EXPORT_COLUMNS_TRAFFIC_SUMMARY);
+        final String semrushResponse = "display_date;target;visits;desktop_visits;mobile_visits;pages_per_visit;desktop_pages_per_visit;mobile_pages_per_visit;bounce_rate;desktop_bounce_rate;mobile_bounce_rate;users\n" +
+                formatDisplayDate(yearMonthNow.minusMonths(2)) + ";golang.org;4491179;1400453;53313;23133;958;953;9.2;4.3;1.5;1400453";
+
+        when(webClientService.retrieve(
+                apiBaseUrl,
+                env.getProperty(PATH_TRAFFIC_SUMMARY),
+                params,
+                HttpMethod.GET,
+                Collections.emptyMap(),
+                List.of(MediaType.valueOf("text/csv")),
+                StringUtils.EMPTY
+        )).thenReturn(semrushResponse);
+
+        final List<SemrushTrafficSummaryResponse> result = List.of(new SemrushTrafficSummaryResponse(LocalDate.of(yearMonthNow.getYear(), yearMonthNow.minusMonths(2).getMonth(), 1),"golang.org", 4491179, 1400453,53313,23133d,958d,953d,9.2,4.3,1.5,1400453));
+        assertEquals(result, semrushService.getTrafficSummaryHistory(target, period, countryCode));
     }
 
     @Test
@@ -159,7 +192,7 @@ class SemrushTrafficServiceTest {
         params.add(QUERY_PARAM_DISPLAY_DATE, formatDisplayDate(request.getDisplayDate()));
         params.add(QUERY_PARAM_DISPLAY_OFFSET, String.valueOf(request.getOffset()));
         params.add(QUERY_PARAM_DISPLAY_LIMIT, String.valueOf(request.getLimit()));
-        params.add(QUERY_PARAM_EXPORT_COLUMNS, EXPORT_COLUMNS_TRAFFIC_SUMMARY);
+        params.add(QUERY_PARAM_EXPORT_COLUMNS, EXPORT_COLUMNS_TRAFFIC_TOP_PAGES);
         final String semrushResponse = "page;display_date;traffic_share\n" +
                 "amazon.com/s;2020-06-01;1\n" +
                 "amazon.com;2020-06-01;0.2545288066748602\n" +
@@ -179,7 +212,7 @@ class SemrushTrafficServiceTest {
                 StringUtils.EMPTY
         )).thenReturn(semrushResponse);
 
-        Assertions.assertEquals(result, semrushService.getTopPages(request));
+        assertEquals(result, semrushService.getTopPages(request));
     }
 
     @Test
@@ -211,7 +244,7 @@ class SemrushTrafficServiceTest {
                 StringUtils.EMPTY
         )).thenReturn(semrushResponse);
 
-        Assertions.assertEquals(result, semrushService.getTopSubfolders(request));
+        assertEquals(result, semrushService.getTopSubfolders(request));
     }
 
     @Test
@@ -229,9 +262,9 @@ class SemrushTrafficServiceTest {
                 "smile.amazon.com;2022-12-01;50300062;89.25;10.75\n" +
                 "console.aws.amazon.com;2022-12-01;14274172;65.55;34.45";
         final List<SemrushTopSubdomainResponse> result = new ArrayList<>();
-        result.add(new SemrushTopSubdomainResponse("gaming.amazon.com", LocalDate.of(2022, 12, 01), 24274866, 51.9, 48.1));
-        result.add(new SemrushTopSubdomainResponse("smile.amazon.com", LocalDate.of(2022, 12, 01), 50300062, 89.25, 10.75));
-        result.add(new SemrushTopSubdomainResponse("console.aws.amazon.com", LocalDate.of(2022, 12, 01), 14274172, 65.55, 34.45));
+        result.add(new SemrushTopSubdomainResponse("gaming.amazon.com", LocalDate.of(2022, 12, 01), 24274866l, 51.9, 48.1));
+        result.add(new SemrushTopSubdomainResponse("smile.amazon.com", LocalDate.of(2022, 12, 01), 50300062l, 89.25, 10.75));
+        result.add(new SemrushTopSubdomainResponse("console.aws.amazon.com", LocalDate.of(2022, 12, 01), 14274172l, 65.55, 34.45));
 
         when(webClientService.retrieve(
                 apiBaseUrl,
@@ -243,7 +276,7 @@ class SemrushTrafficServiceTest {
                 StringUtils.EMPTY
         )).thenReturn(semrushResponse);
 
-        Assertions.assertEquals(result, semrushService.getTopSubdomains(request));
+        assertEquals(result, semrushService.getTopSubdomains(request));
     }
 
     @Test
@@ -279,6 +312,6 @@ class SemrushTrafficServiceTest {
                 StringUtils.EMPTY
         )).thenReturn(semrushResponse);
 
-        Assertions.assertEquals(result, semrushService.getTrafficSources(request));
+        assertEquals(result, semrushService.getTrafficSources(request));
     }
 }
