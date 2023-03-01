@@ -50,6 +50,7 @@ import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLU
 import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_TRAFFIC_DESTINATION;
 import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_TRAFFIC_SOURCE;
 import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_TRAFFIC_SUMMARY;
+import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_TRAFFIC_TOP_PAGES;
 import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_TRAFFIC_TOP_SUBDOMAINS;
 import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_TRAFFIC_TOP_SUBFOLDERS;
 import static com.searchify.suggestion.api.constant.SemrushConstants.PATH_COUNT_API_UNIT;
@@ -156,10 +157,12 @@ public class SemrushTrafficService {
         return (List<SemrushTrafficSummaryResponse>) parseCsvResponseBody(responseBody, CSV_SEPARATOR, SemrushTrafficSummaryResponse.class);
     }
 
-    public List<SemrushTrafficSummaryResponse> getTrafficSummaryHistory(@NotNull final String target, @NotNull final SemrushPeriod period) {
+    public List<SemrushTrafficSummaryResponse> getTrafficSummaryHistory(@NotNull final String target,
+                                                                        @NotNull final SemrushPeriod period,
+                                                                        @NotNull final String country) {
         final List<SemrushTrafficSummaryResponse> result = new ArrayList<>();
-        for (int i = 1; i <= period.getLength(); i++) {
-            final SemrushTrafficSummaryRequest request = new SemrushTrafficSummaryRequest(List.of(target), YearMonth.now().minusMonths(i), null);
+        for (int i = 2; i <= period.getLength()+1; i++) {
+            final SemrushTrafficSummaryRequest request = new SemrushTrafficSummaryRequest(List.of(target), YearMonth.now().minusMonths(i), country);
             result.addAll(getTrafficSummary(request));
         }
 
@@ -173,7 +176,7 @@ public class SemrushTrafficService {
         params.add(QUERY_PARAM_DISPLAY_DATE, formatDisplayDate(request.getDisplayDate()));
         params.add(QUERY_PARAM_DISPLAY_OFFSET, String.valueOf(request.getOffset()));
         params.add(QUERY_PARAM_DISPLAY_LIMIT, String.valueOf(request.getLimit()));
-        params.add(QUERY_PARAM_EXPORT_COLUMNS, EXPORT_COLUMNS_TRAFFIC_SUMMARY);
+        params.add(QUERY_PARAM_EXPORT_COLUMNS, EXPORT_COLUMNS_TRAFFIC_TOP_PAGES);
 
         final String responseBody = webClientService.retrieve(
                 apiBaseUrl,

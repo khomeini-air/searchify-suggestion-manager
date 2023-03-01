@@ -24,7 +24,7 @@ public class TopSubdomainResponse {
     @JsonFormat(pattern = "yyyy-MM")
     private YearMonth displayDate;
 
-    private Integer totalVisits;
+    private Long totalVisits;
     private Double desktopShare;
     private Double mobileShare;
 }

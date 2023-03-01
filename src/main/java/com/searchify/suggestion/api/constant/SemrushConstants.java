@@ -39,7 +39,7 @@ public class SemrushConstants {
     public static final String EXPORT_COLUMNS_PHRASE_QUESTIONS = "Ph,Nq,Kd";
     public static final String EXPORT_COLUMNS_PHRASE_RELATED = "Ph,Nq,Kd";
     public static final String EXPORT_COLUMNS_ORGANIC = "Dn,Cr";
-    public static final String EXPORT_COLUMNS_TRAFFIC_SUMMARY = "target,visits,desktop_visits,mobile_visits,pages_per_visit," +
+    public static final String EXPORT_COLUMNS_TRAFFIC_SUMMARY = "display_date,target,visits,desktop_visits,mobile_visits,pages_per_visit," +
             "desktop_pages_per_visit,mobile_pages_per_visit,bounce_rate,desktop_bounce_rate,mobile_bounce_rate,users";
     public static final String EXPORT_COLUMNS_TRAFFIC_TOP_PAGES = "page,display_date,traffic_share";
     public static final String EXPORT_COLUMNS_TRAFFIC_TOP_SUBFOLDERS = "subfolder,display_date,traffic_share,unique_pageviews";

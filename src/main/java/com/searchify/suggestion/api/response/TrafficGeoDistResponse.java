@@ -24,6 +24,7 @@ public class TrafficGeoDistResponse {
     private Double trafficShare;
     private Double desktopShare;
     private Double mobileShare;
+
     @JsonFormat(pattern = "yyyy-MM")
     private YearMonth displayDate;
 }

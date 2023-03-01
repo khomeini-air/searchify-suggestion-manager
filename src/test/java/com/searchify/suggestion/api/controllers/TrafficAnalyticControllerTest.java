@@ -45,17 +45,17 @@ class TrafficAnalyticControllerTest {
         final SemrushTrafficSummaryRequest semrushRequest = new SemrushTrafficSummaryRequest(List.of("golang.org","blog.golang.org","tour.golang.org/welcome/"),
                 displayDate, country);
         final List<SemrushTrafficSummaryResponse> semrushResponse = new ArrayList<>();
-        semrushResponse.add(new SemrushTrafficSummaryResponse("golang.org", 4491179, 34522,53313,134,958,953,9.2,4.3,1.5,1400453));
-        semrushResponse.add(new SemrushTrafficSummaryResponse("blog.golang.org", 402104, 34522,53313,134,958,953,9.2,4.3,1.5,204891));
-        semrushResponse.add(new SemrushTrafficSummaryResponse("tour.golang.org/welcome/", 10131, 34522,53313,134,958,953,9.2,4.3,1.5,11628));
+        semrushResponse.add(new SemrushTrafficSummaryResponse(LocalDate.of(2023, 2, 1), "golang.org", 4491179, 34522,53313,134d,958d,953d,9.2,4.3,1.5,1400453));
+        semrushResponse.add(new SemrushTrafficSummaryResponse(LocalDate.of(2023, 2, 1), "blog.golang.org", 402104, 34522,53313,134d,958d,953d,9.2,4.3,1.5,204891));
+        semrushResponse.add(new SemrushTrafficSummaryResponse(LocalDate.of(2023, 2, 1), "tour.golang.org/welcome/", 10131, 34522,53313,134d,958d,953d,9.2,4.3,1.5,11628));
         when(semrushService.getTrafficSummary(semrushRequest)).thenReturn(semrushResponse);
 
-        final String resultJson = "[{\"target\":\"golang.org\",\"visitAmount\":4491179,\"desktopVisits\":34522,\"mobileVisits\":53313,\"pagesPerVisit\":134," +
-                "\"desktopPagesPerVisit\":958,\"mobilePagesPerVisit\":953,\"bounceRate\":9.2,\"desktopBbounceRate\":4.3,\"mobileBbounceRate\":1.5,\"userAmount\":1400453}," +
-                "{\"target\":\"blog.golang.org\",\"visitAmount\":402104,\"desktopVisits\":34522,\"mobileVisits\":53313,\"pagesPerVisit\":134," +
-                "\"desktopPagesPerVisit\":958,\"mobilePagesPerVisit\":953,\"bounceRate\":9.2,\"desktopBbounceRate\":4.3,\"mobileBbounceRate\":1.5,\"userAmount\":204891}," +
-                "{\"target\":\"tour.golang.org/welcome/\",\"visitAmount\":10131,\"desktopVisits\":34522,\"mobileVisits\":53313,\"pagesPerVisit\":134," +
-                "\"desktopPagesPerVisit\":958,\"mobilePagesPerVisit\":953,\"bounceRate\":9.2,\"desktopBbounceRate\":4.3,\"mobileBbounceRate\":1.5,\"userAmount\":11628}]";
+        final String resultJson = "[{\"target\":\"golang.org\",\"visitAmount\":4491179,\"desktopVisits\":34522,\"mobileVisits\":53313,\"pagesPerVisit\":134.0," +
+                "\"desktopPagesPerVisit\":958.0,\"mobilePagesPerVisit\":953.0,\"bounceRate\":9.2,\"desktopBbounceRate\":4.3,\"mobileBbounceRate\":1.5,\"userAmount\":1400453,\"displayDate\":\"2023-02\"}," +
+                "{\"target\":\"blog.golang.org\",\"visitAmount\":402104,\"desktopVisits\":34522,\"mobileVisits\":53313,\"pagesPerVisit\":134.0," +
+                "\"desktopPagesPerVisit\":958.0,\"mobilePagesPerVisit\":953.0,\"bounceRate\":9.2,\"desktopBbounceRate\":4.3,\"mobileBbounceRate\":1.5,\"userAmount\":204891,\"displayDate\":\"2023-02\"}," +
+                "{\"target\":\"tour.golang.org/welcome/\",\"visitAmount\":10131,\"desktopVisits\":34522,\"mobileVisits\":53313,\"pagesPerVisit\":134.0," +
+                "\"desktopPagesPerVisit\":958.0,\"mobilePagesPerVisit\":953.0,\"bounceRate\":9.2,\"desktopBbounceRate\":4.3,\"mobileBbounceRate\":1.5,\"userAmount\":11628,\"displayDate\":\"2023-02\"}]";
         Assert.assertEquals("2023-02-01", formatDisplayDate(displayDate));
         mockMvc.perform(get(urlString))
                 .andExpect(status().isOk())
@@ -124,9 +124,9 @@ class TrafficAnalyticControllerTest {
                 target, DateTimeFormatter.ofPattern("yyyy-MM").format(displayDate), offset, limit);
         final SemrushTopSubdomainRequest semrushRequest = new SemrushTopSubdomainRequest("amazon.com", displayDate, offset, limit);
         final List<SemrushTopSubdomainResponse> semrushResponse = new ArrayList<>();
-        semrushResponse.add(new SemrushTopSubdomainResponse("gaming.amazon.com", LocalDate.of(2022, 12, 01), 24274866, 51.9, 48.1));
-        semrushResponse.add(new SemrushTopSubdomainResponse("smile.amazon.com", LocalDate.of(2022, 12, 01), 50300062, 89.25, 10.75));
-        semrushResponse.add(new SemrushTopSubdomainResponse("console.aws.amazon.com", LocalDate.of(2022, 12, 01), 14274172, 65.55, 34.45));
+        semrushResponse.add(new SemrushTopSubdomainResponse("gaming.amazon.com", LocalDate.of(2022, 12, 01), 24274866l, 51.9, 48.1));
+        semrushResponse.add(new SemrushTopSubdomainResponse("smile.amazon.com", LocalDate.of(2022, 12, 01), 50300062l, 89.25, 10.75));
+        semrushResponse.add(new SemrushTopSubdomainResponse("console.aws.amazon.com", LocalDate.of(2022, 12, 01), 14274172l, 65.55, 34.45));
         when(semrushService.getTopSubdomains(semrushRequest)).thenReturn(semrushResponse);
 
         final String resultJson = "[{\"subdomain\":\"gaming.amazon.com\",\"displayDate\":\"2022-12\",\"totalVisits\":24274866,\"desktopShare\":51.9,\"mobileShare\":48.1}," +
