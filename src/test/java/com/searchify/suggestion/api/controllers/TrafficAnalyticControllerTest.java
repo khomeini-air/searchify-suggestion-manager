@@ -45,9 +45,9 @@ class TrafficAnalyticControllerTest {
         final SemrushTrafficSummaryRequest semrushRequest = new SemrushTrafficSummaryRequest(List.of("golang.org","blog.golang.org","tour.golang.org/welcome/"),
                 displayDate, country);
         final List<SemrushTrafficSummaryResponse> semrushResponse = new ArrayList<>();
-        semrushResponse.add(new SemrushTrafficSummaryResponse(LocalDate.of(2023, 2, 1), "golang.org", 4491179l, 34522l,53313l,134d,958d,953d,9.2,4.3,1.5,1400453l));
-        semrushResponse.add(new SemrushTrafficSummaryResponse(LocalDate.of(2023, 2, 1), "blog.golang.org", 402104l, 34522l,53313l,134d,958d,953d,9.2,4.3,1.5,204891l));
-        semrushResponse.add(new SemrushTrafficSummaryResponse(LocalDate.of(2023, 2, 1), "tour.golang.org/welcome/", 10131l, 34522l,53313l,134d,958d,953d,9.2,4.3,1.5,11628l));
+        semrushResponse.add(new SemrushTrafficSummaryResponse("golang.org", 4491179, 34522,53313,134,958,953,9.2,4.3,1.5,1400453));
+        semrushResponse.add(new SemrushTrafficSummaryResponse("blog.golang.org", 402104, 34522,53313,134,958,953,9.2,4.3,1.5,204891));
+        semrushResponse.add(new SemrushTrafficSummaryResponse("tour.golang.org/welcome/", 10131, 34522,53313,134,958,953,9.2,4.3,1.5,11628));
         when(semrushService.getTrafficSummary(semrushRequest)).thenReturn(semrushResponse);
 
         final String resultJson = "[{\"target\":\"golang.org\",\"visitAmount\":4491179,\"desktopVisits\":34522,\"mobileVisits\":53313,\"pagesPerVisit\":134.0," +
