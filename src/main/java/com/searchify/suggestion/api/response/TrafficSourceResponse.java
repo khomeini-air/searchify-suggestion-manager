@@ -18,18 +18,12 @@ import java.time.YearMonth;
 @ToString
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class TrafficSummaryResponse {
-    private String target;
-    private Long visitAmount;
-    private Long desktopVisits;
-    private Long mobileVisits;
-    private Double pagesPerVisit;
-    private Double desktopPagesPerVisit;
-    private Double mobilePagesPerVisit;
-    private Double bounceRate;
-    private Double desktopBbounceRate;
-    private Double mobileBbounceRate;
-    private Long userAmount;
+public class TrafficSourceResponse {
+    private String fromTarget;
+    private Double trafficShare;
+    private Long traffic;
+    private String trafficType;
+    private String trafficChannel;
 
     @JsonFormat(pattern = "yyyy-MM")
     private YearMonth displayDate;

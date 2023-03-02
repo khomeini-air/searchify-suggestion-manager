@@ -25,5 +25,5 @@ public class TopSubfolderResponse {
     private YearMonth displayDate;
 
     private Double trafficShare;
-    private Integer uniquePageViews;
+    private Long uniquePageViews;
 }

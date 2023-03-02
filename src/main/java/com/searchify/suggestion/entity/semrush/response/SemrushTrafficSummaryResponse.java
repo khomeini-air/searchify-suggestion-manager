@@ -26,13 +26,13 @@ public class SemrushTrafficSummaryResponse extends SemrushBaseResponse{
     private String target;
 
     @CsvBindByName(column = "visits")
-    private Integer visits;
+    private Long visits;
 
     @CsvBindByName(column = "desktop_visits")
-    private Integer desktopVisits;
+    private Long desktopVisits;
 
     @CsvBindByName(column = "mobile_visits")
-    private Integer mobileVisits;
+    private Long mobileVisits;
 
     @CsvBindByName(column = "pages_per_visit")
     private Double pagesPerVisit;
@@ -53,5 +53,5 @@ public class SemrushTrafficSummaryResponse extends SemrushBaseResponse{
     private Double mobileBbounceRate;
 
     @CsvBindByName(column = "users")
-    private Integer userAmount;
+    private Long userAmount;
 }

@@ -164,6 +164,31 @@ public class TrafficAnalyticController {
                 .body(result);
     }
 
+    /*@GetMapping("/api/analytic/traffic/destinations")
+    public ResponseEntity<List<TrafficSourceResponse>> getTrafficSources(@RequestParam
+                                                                                  @Schema(description = "target website",
+                                                                                          example = "ebay.com") final String target,
+                                                                             @RequestParam
+                                                                                  @DateTimeFormat(pattern = "yyyy-MM")
+                                                                                  @Schema(pattern = "yyyy-MM", example = "2023-02") final YearMonth displayDate,
+                                                                             @RequestParam @Min(0) @Max(10000)
+                                                                                  @Schema(description = "Skip the specified number of result") final Integer offset,
+                                                                             @RequestParam @Min(1) @Max(5000)
+                                                                                  @Schema(description = "The number of results returned") final Integer limit) {
+        final SemrushTrafficSourceRequest semrushRequest = new SemrushTrafficSourceRequest(target, displayDate, offset, limit);
+        final List<SemrushTrafficDestinationResponse> semrushResponse = semrushService.getTrafficDestinations(semrushRequest);
+        if (semrushResponse.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        final List<TrafficDestinationResponse> result = semrushResponse.stream().map(e -> new TrafficDestinationResponse(e.getToTarget(), e.getTrafficShare(),
+                YearMonth.from(e.getDisplayDate()))).collect(Collectors.toList());
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(result);
+    }*/
+
     @GetMapping("/api/analytic/traffic/destinations")
     public ResponseEntity<List<TrafficDestinationResponse>> getTrafficDestination(@RequestParam
                                                                                   @Schema(description = "target website",
