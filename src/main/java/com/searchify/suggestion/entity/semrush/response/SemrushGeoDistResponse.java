@@ -22,7 +22,7 @@ public class SemrushGeoDistResponse extends SemrushBaseResponse {
     private String countryCode;
 
     @CsvBindByName(column = "traffic")
-    private Integer traffic;
+    private Long traffic;
 
     @CsvBindByName(column = "traffic_share")
     private Double trafficShare;

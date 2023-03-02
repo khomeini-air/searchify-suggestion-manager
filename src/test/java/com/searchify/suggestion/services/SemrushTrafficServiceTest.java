@@ -58,11 +58,13 @@ import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DOMAIN;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_EXPORT_COLUMNS;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_KEY;
+import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_SORT_ORDER;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_TARGET;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_TARGETS;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_TRAFFIC_CHANNEL;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_TRAFFIC_TYPE;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_TYPE;
+import static com.searchify.suggestion.api.constant.SemrushConstants.SORT_ORDER_TRAFFIC_SHARE_DESC;
 import static com.searchify.suggestion.api.constant.SemrushConstants.TYPE_DOMAIN_ORGANIC;
 import static com.searchify.suggestion.util.SemrushUtil.formatDisplayDate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -136,9 +138,9 @@ class SemrushTrafficServiceTest {
                 "2023-01-01;blog.golang.org;402104;204891;23324;11243;892;789;6.3;2.2;0.7;892894\n" +
                 "2023-01-01;tour.golang.org/welcome/;10131;11628;11234;14324;112;291;2.9;2.1;0.5;308403";
         final List<SemrushTrafficSummaryResponse> result = new ArrayList<>();
-        result.add(new SemrushTrafficSummaryResponse(LocalDate.of(2023, 01, 01), "golang.org", 4491179, 1400453,53313,23133d,958d,953d,9.2,4.3,1.5,1400453));
-        result.add(new SemrushTrafficSummaryResponse(LocalDate.of(2023, 01, 01), "blog.golang.org", 402104, 204891,23324,11243d,892d,789d,6.3,2.2,0.7,892894));
-        result.add(new SemrushTrafficSummaryResponse(LocalDate.of(2023, 01, 01), "tour.golang.org/welcome/", 10131, 11628,11234,14324d,112d,291d,2.9,2.1,0.5,308403));
+        result.add(new SemrushTrafficSummaryResponse(LocalDate.of(2023, 01, 01), "golang.org", 4491179l, 1400453l,53313l,23133d,958d,953d,9.2,4.3,1.5,1400453l));
+        result.add(new SemrushTrafficSummaryResponse(LocalDate.of(2023, 01, 01), "blog.golang.org", 402104l, 204891l,23324l,11243d,892d,789d,6.3,2.2,0.7,892894l));
+        result.add(new SemrushTrafficSummaryResponse(LocalDate.of(2023, 01, 01), "tour.golang.org/welcome/", 10131l, 11628l,11234l,14324d,112d,291d,2.9,2.1,0.5,308403l));
 
         when(webClientService.retrieve(
                 apiBaseUrl,
@@ -179,7 +181,7 @@ class SemrushTrafficServiceTest {
                 StringUtils.EMPTY
         )).thenReturn(semrushResponse);
 
-        final List<SemrushTrafficSummaryResponse> result = List.of(new SemrushTrafficSummaryResponse(LocalDate.of(yearMonthNow.getYear(), yearMonthNow.minusMonths(2).getMonth(), 1),"golang.org", 4491179, 1400453,53313,23133d,958d,953d,9.2,4.3,1.5,1400453));
+        final List<SemrushTrafficSummaryResponse> result = List.of(new SemrushTrafficSummaryResponse(LocalDate.of(yearMonthNow.getYear(), yearMonthNow.minusMonths(2).getMonth(), 1),"golang.org", 4491179l, 1400453l,53313l,23133d,958d,953d,9.2,4.3,1.5,1400453l));
         assertEquals(result, semrushService.getTrafficSummaryHistory(target, period, countryCode));
     }
 
@@ -230,9 +232,9 @@ class SemrushTrafficServiceTest {
                 "/mobile/;2022-12-01;3.91;33186275\n" +
                 "/mye/;2022-12-01;3.19;76893681";
         final List<SemrushTopSubfolderResponse> result = new ArrayList<>();
-        result.add(new SemrushTopSubfolderResponse("/sch/", LocalDate.of(2022, 12, 01), 9.28, 173201982));
-        result.add(new SemrushTopSubfolderResponse("/mobile/", LocalDate.of(2022, 12, 01), 3.91, 33186275));
-        result.add(new SemrushTopSubfolderResponse("/mye/", LocalDate.of(2022, 12, 01), 3.19, 76893681));
+        result.add(new SemrushTopSubfolderResponse("/sch/", LocalDate.of(2022, 12, 01), 9.28, 173201982l));
+        result.add(new SemrushTopSubfolderResponse("/mobile/", LocalDate.of(2022, 12, 01), 3.91, 33186275l));
+        result.add(new SemrushTopSubfolderResponse("/mye/", LocalDate.of(2022, 12, 01), 3.19, 76893681l));
 
         when(webClientService.retrieve(
                 apiBaseUrl,
@@ -292,15 +294,16 @@ class SemrushTrafficServiceTest {
         params.add(QUERY_PARAM_DISPLAY_OFFSET, String.valueOf(request.getOffset()));
         params.add(QUERY_PARAM_DISPLAY_LIMIT, String.valueOf(request.getLimit()));
         params.add(QUERY_PARAM_EXPORT_COLUMNS, EXPORT_COLUMNS_TRAFFIC_SOURCE);
+        params.add(QUERY_PARAM_SORT_ORDER, SORT_ORDER_TRAFFIC_SHARE_DESC);
 
-        final String semrushResponse = "from_target;display_date;traffic;channel;traffic_type\n" +
-        "phlap.net;2022-12-01;7025;referral;paid\n" +
-        "blackhatworld.com;2022-12-01;2342;referral;paid\n" +
-        "crunchyroll.com;2022-12-01;1873;referral;paid";
+        final String semrushResponse = "from_target;display_date;traffic_share;traffic;channel;traffic_type\n" +
+        "phlap.net;2022-12-01;2.33;7025;referral;paid\n" +
+        "blackhatworld.com;2022-12-01;3.4;2342;referral;paid\n" +
+        "crunchyroll.com;2022-12-01;5.8;1873;referral;paid";
         final List<SemrushTrafficSourceResponse> result = new ArrayList<>();
-        result.add(new SemrushTrafficSourceResponse("phlap.net", LocalDate.of(2022, 12, 01), 7025, "paid", "referral"));
-        result.add(new SemrushTrafficSourceResponse("blackhatworld.com", LocalDate.of(2022, 12, 01), 2342, "paid", "referral"));
-        result.add(new SemrushTrafficSourceResponse("crunchyroll.com", LocalDate.of(2022, 12, 01), 1873, "paid", "referral"));
+        result.add(new SemrushTrafficSourceResponse("phlap.net", LocalDate.of(2022, 12, 01), 2.33d, 7025l, "paid", "referral"));
+        result.add(new SemrushTrafficSourceResponse("blackhatworld.com", LocalDate.of(2022, 12, 01), 3.4d, 2342l, "paid", "referral"));
+        result.add(new SemrushTrafficSourceResponse("crunchyroll.com", LocalDate.of(2022, 12, 01), 5.8d, 1873l, "paid", "referral"));
 
         when(webClientService.retrieve(
                 apiBaseUrl,

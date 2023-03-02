@@ -20,7 +20,7 @@ import java.time.YearMonth;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class TrafficGeoDistResponse {
     private String countryCode;
-    private Integer traffic;
+    private Long traffic;
     private Double trafficShare;
     private Double desktopShare;
     private Double mobileShare;

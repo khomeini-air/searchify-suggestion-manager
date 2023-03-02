@@ -45,9 +45,9 @@ class TrafficAnalyticControllerTest {
         final SemrushTrafficSummaryRequest semrushRequest = new SemrushTrafficSummaryRequest(List.of("golang.org","blog.golang.org","tour.golang.org/welcome/"),
                 displayDate, country);
         final List<SemrushTrafficSummaryResponse> semrushResponse = new ArrayList<>();
-        semrushResponse.add(new SemrushTrafficSummaryResponse(LocalDate.of(2023, 2, 1), "golang.org", 4491179, 34522,53313,134d,958d,953d,9.2,4.3,1.5,1400453));
-        semrushResponse.add(new SemrushTrafficSummaryResponse(LocalDate.of(2023, 2, 1), "blog.golang.org", 402104, 34522,53313,134d,958d,953d,9.2,4.3,1.5,204891));
-        semrushResponse.add(new SemrushTrafficSummaryResponse(LocalDate.of(2023, 2, 1), "tour.golang.org/welcome/", 10131, 34522,53313,134d,958d,953d,9.2,4.3,1.5,11628));
+        semrushResponse.add(new SemrushTrafficSummaryResponse("golang.org", 4491179, 34522,53313,134,958,953,9.2,4.3,1.5,1400453));
+        semrushResponse.add(new SemrushTrafficSummaryResponse("blog.golang.org", 402104, 34522,53313,134,958,953,9.2,4.3,1.5,204891));
+        semrushResponse.add(new SemrushTrafficSummaryResponse("tour.golang.org/welcome/", 10131, 34522,53313,134,958,953,9.2,4.3,1.5,11628));
         when(semrushService.getTrafficSummary(semrushRequest)).thenReturn(semrushResponse);
 
         final String resultJson = "[{\"target\":\"golang.org\",\"visitAmount\":4491179,\"desktopVisits\":34522,\"mobileVisits\":53313,\"pagesPerVisit\":134.0," +
@@ -99,9 +99,9 @@ class TrafficAnalyticControllerTest {
                 target, DateTimeFormatter.ofPattern("yyyy-MM").format(displayDate), offset, limit);
         final SemrushTopSubfolderRequest semrushRequest = new SemrushTopSubfolderRequest("amazon.com", displayDate, offset, limit);
         final List<SemrushTopSubfolderResponse> semrushResponse = new ArrayList<>();
-        semrushResponse.add(new SemrushTopSubfolderResponse("/sch/", LocalDate.of(2022, 12, 01), 9.28, 173201982));
-        semrushResponse.add(new SemrushTopSubfolderResponse("/mobile/", LocalDate.of(2022, 12, 01), 3.91, 33186275));
-        semrushResponse.add(new SemrushTopSubfolderResponse("/mye/", LocalDate.of(2022, 12, 01), 3.19, 76893681));
+        semrushResponse.add(new SemrushTopSubfolderResponse("/sch/", LocalDate.of(2022, 12, 01), 9.28, 173201982l));
+        semrushResponse.add(new SemrushTopSubfolderResponse("/mobile/", LocalDate.of(2022, 12, 01), 3.91, 33186275l));
+        semrushResponse.add(new SemrushTopSubfolderResponse("/mye/", LocalDate.of(2022, 12, 01), 3.19, 76893681l));
         when(semrushService.getTopSubfolders(semrushRequest)).thenReturn(semrushResponse);
 
         final String resultJson = "[{\"page\":\"/sch/\",\"displayDate\":\"2022-12\",\"trafficShare\":9.28,\"uniquePageViews\":173201982}," +

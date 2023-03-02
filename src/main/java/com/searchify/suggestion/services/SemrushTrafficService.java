@@ -77,7 +77,7 @@ import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_TRAFFIC_TYPE;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_TYPE;
 import static com.searchify.suggestion.api.constant.SemrushConstants.SORT_ORDER_GEO_DISTRIBUTION;
-import static com.searchify.suggestion.api.constant.SemrushConstants.SORT_ORDER_TRAFFIC_DESTINATION;
+import static com.searchify.suggestion.api.constant.SemrushConstants.SORT_ORDER_TRAFFIC_SHARE_DESC;
 import static com.searchify.suggestion.api.constant.SemrushConstants.TYPE_DOMAIN_ORGANIC;
 import static com.searchify.suggestion.util.SemrushUtil.formatDisplayDate;
 import static com.searchify.suggestion.util.SemrushUtil.parseCsvResponseBody;
@@ -243,6 +243,7 @@ public class SemrushTrafficService {
         params.add(QUERY_PARAM_DISPLAY_OFFSET, String.valueOf(request.getOffset()));
         params.add(QUERY_PARAM_DISPLAY_LIMIT, String.valueOf(request.getLimit()));
         params.add(QUERY_PARAM_EXPORT_COLUMNS, EXPORT_COLUMNS_TRAFFIC_SOURCE);
+        params.add(QUERY_PARAM_SORT_ORDER, SORT_ORDER_TRAFFIC_SHARE_DESC);
 
         final String responseBody = webClientService.retrieve(
                 apiBaseUrl,
@@ -282,7 +283,7 @@ public class SemrushTrafficService {
         params.add(QUERY_PARAM_DISPLAY_OFFSET, String.valueOf(request.getOffset()));
         params.add(QUERY_PARAM_DISPLAY_LIMIT, String.valueOf(request.getLimit()));
         params.add(QUERY_PARAM_EXPORT_COLUMNS, EXPORT_COLUMNS_TRAFFIC_DESTINATION);
-        params.add(QUERY_PARAM_SORT_ORDER, SORT_ORDER_TRAFFIC_DESTINATION);
+        params.add(QUERY_PARAM_SORT_ORDER, SORT_ORDER_TRAFFIC_SHARE_DESC);
 
         final String responseBody = webClientService.retrieve(
                 apiBaseUrl,

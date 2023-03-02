@@ -18,12 +18,13 @@ import java.time.YearMonth;
 @ToString
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class TopSubfolderResponse {
-    private String page;
+public class TrafficSourceResponse {
+    private String fromTarget;
+    private Double trafficShare;
+    private Long traffic;
+    private String trafficType;
+    private String trafficChannel;
 
     @JsonFormat(pattern = "yyyy-MM")
     private YearMonth displayDate;
-
-    private Double trafficShare;
-    private Long uniquePageViews;
 }

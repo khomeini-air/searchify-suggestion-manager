@@ -25,8 +25,11 @@ public class SemrushTrafficSourceResponse extends SemrushBaseResponse {
     @CsvDate(value = "yyyy-MM-dd")
     private LocalDate displayDate;
 
+    @CsvBindByName(column = "traffic_share")
+    private Double trafficShare;
+
     @CsvBindByName(column = "traffic")
-    private Integer traffic;
+    private Long traffic;
 
     @CsvBindByName(column = "traffic_type")
     private String trafficType;

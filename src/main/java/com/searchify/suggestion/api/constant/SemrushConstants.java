@@ -44,11 +44,11 @@ public class SemrushConstants {
     public static final String EXPORT_COLUMNS_TRAFFIC_TOP_PAGES = "page,display_date,traffic_share";
     public static final String EXPORT_COLUMNS_TRAFFIC_TOP_SUBFOLDERS = "subfolder,display_date,traffic_share,unique_pageviews";
     public static final String EXPORT_COLUMNS_TRAFFIC_TOP_SUBDOMAINS = "subdomain,display_date,total_visits,desktop_share,mobile_share";
-    public static final String EXPORT_COLUMNS_TRAFFIC_SOURCE = "from_target,display_date,traffic,traffic_type,channel";
-    public static final String EXPORT_COLUMNS_TRAFFIC_DESTINATION = "to_target, traffic_share, display_date";
+    public static final String EXPORT_COLUMNS_TRAFFIC_SOURCE = "from_target,display_date,traffic_share,traffic,traffic_type,channel";
+    public static final String EXPORT_COLUMNS_TRAFFIC_DESTINATION = "to_target,traffic_share,display_date";
     public static final String EXPORT_COLUMNS_AGESEX_DISTRIBUTION = "age,female_users,male_users,female_share,male_share,display_date";
     public static final String EXPORT_COLUMNS_GEO_DISTRIBUTION = "geo,traffic,traffic_share,desktop_share,mobile_share,display_date";
-    public static final String SORT_ORDER_TRAFFIC_DESTINATION = "traffic_share_desc";
+    public static final String SORT_ORDER_TRAFFIC_SHARE_DESC = "traffic_share_desc";
     public static final String SORT_ORDER_GEO_DISTRIBUTION = "traffic_share_desc";
     public static final String SORT_ORDER_VOLUME = "nq_desc";
     public static final String DATABASE_DEFAULT = "us";

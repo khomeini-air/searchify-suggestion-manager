@@ -28,5 +28,5 @@ public class SemrushTopSubfolderResponse extends SemrushBaseResponse {
     private Double trafficShare;
 
     @CsvBindByName(column = "unique_pageviews")
-    private Integer uniquePageviews;
+    private Long uniquePageviews;
 }
