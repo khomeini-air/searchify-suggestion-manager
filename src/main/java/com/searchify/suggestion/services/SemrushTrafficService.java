@@ -64,6 +64,7 @@ import static com.searchify.suggestion.api.constant.SemrushConstants.PATH_TRAFFI
 import static com.searchify.suggestion.api.constant.SemrushConstants.PATH_TRAFFIC_TOP_SUBDOMAINS;
 import static com.searchify.suggestion.api.constant.SemrushConstants.PATH_TRAFFIC_TOP_SUBFOLDERS;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_COUNTRY;
+import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DATABASE;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DISPLAY_DATE;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DISPLAY_LIMIT;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DISPLAY_OFFSET;
@@ -124,6 +125,7 @@ public class SemrushTrafficService {
         params.add(QUERY_PARAM_DISPLAY_LIMIT, String.valueOf(request.getLimit()));
         params.add(QUERY_PARAM_DOMAIN, request.getDomain());
         params.add(QUERY_PARAM_EXPORT_COLUMNS, EXPORT_COLUMNS_ORGANIC);
+        params.add(QUERY_PARAM_DATABASE, request.getDatabase());
 
         final String responseBody = webClientService.retrieve(
                 apiBaseUrl,

@@ -22,8 +22,9 @@ public class DomainAnalyticController {
     @GetMapping("/api/analytic/domain/organiccompetitor")
     public ResponseEntity<List<OrganicCompetitorResponse>> getOrganicCompetitor(@RequestParam final String domain,
                                                                                 @RequestParam final Integer offset,
-                                                                                @RequestParam final Integer limit) {
-        final List<SemrushOrganicCompetitorResponse> allResult = semrushService.getOrganicCompetitor(new SemrushOrganicCompetitorRequest(domain, offset, limit));
+                                                                                @RequestParam final Integer limit, 
+                                                                                @RequestParam final String database) {
+        final List<SemrushOrganicCompetitorResponse> allResult = semrushService.getOrganicCompetitor(new SemrushOrganicCompetitorRequest(domain, offset, limit, database));
         if (allResult.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
