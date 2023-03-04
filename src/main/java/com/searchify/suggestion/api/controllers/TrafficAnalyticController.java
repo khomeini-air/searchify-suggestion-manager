@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,6 +46,7 @@ public class TrafficAnalyticController {
     @Autowired
     private SemrushTrafficService semrushService;
 
+    @CrossOrigin
     @GetMapping("/api/analytic/traffic/summary")
     public ResponseEntity<List<TrafficSummaryResponse>> getSummary(@RequestParam
                                                                    @Schema(description = "all target websites separated by comma",
@@ -67,7 +69,7 @@ public class TrafficAnalyticController {
                 .body(result);
     }
 
-
+    @CrossOrigin
     @GetMapping("/api/analytic/traffic/summary/history")
     public ResponseEntity<List<TrafficSummaryResponse>> getSummaryHistory(@RequestParam
                                                                           @Schema(description = "a target website",
@@ -88,7 +90,8 @@ public class TrafficAnalyticController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(result);
     }
-
+    
+    @CrossOrigin
     @GetMapping("/api/analytic/traffic/top-pages")
     public ResponseEntity<List<TopPagesResponse>> getTopPages(@RequestParam
                                                               @Schema(description = "target website",
@@ -114,6 +117,7 @@ public class TrafficAnalyticController {
                 .body(result);
     }
 
+    @CrossOrigin
     @GetMapping("/api/analytic/traffic/top-subfolders")
     public ResponseEntity<List<TopSubfolderResponse>> getTopSubfolders(@RequestParam
                                                                        @Schema(description = "target website",
@@ -138,7 +142,8 @@ public class TrafficAnalyticController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(result);
     }
-
+    
+    @CrossOrigin
     @GetMapping("/api/analytic/traffic/top-subdomains")
     public ResponseEntity<List<TopSubdomainResponse>> getTopSubdomains(@RequestParam
                                                                        @Schema(description = "target website",
@@ -189,6 +194,7 @@ public class TrafficAnalyticController {
                 .body(result);
     }*/
 
+    @CrossOrigin
     @GetMapping("/api/analytic/traffic/destinations")
     public ResponseEntity<List<TrafficDestinationResponse>> getTrafficDestination(@RequestParam
                                                                                   @Schema(description = "target website",
@@ -214,6 +220,7 @@ public class TrafficAnalyticController {
                 .body(result);
     }
 
+    @CrossOrigin
     @GetMapping("/api/analytic/traffic/age-sex-distribution")
     public ResponseEntity<List<TrafficAgeSexDistResponse>> getAgeSexDistribution(@RequestParam
                                                                                  @Schema(description = "target website",
@@ -235,6 +242,7 @@ public class TrafficAnalyticController {
                 .body(result);
     }
 
+    @CrossOrigin
     @GetMapping("/api/analytic/traffic/geo-distribution")
     public ResponseEntity<List<TrafficGeoDistResponse>> getGeoDistribution(@RequestParam
                                                                            @Schema(description = "target website",
