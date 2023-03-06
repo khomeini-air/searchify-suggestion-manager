@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,6 +34,7 @@ public class KeywordAnalyticController {
     @Autowired
     private SemrushKeywordService semrushService;
 
+    @CrossOrigin
     @GetMapping("/api/analytic/keyword/overview")
     public ResponseEntity<List<KeywordOverviewResponse>> getKeywordOverview(@RequestParam final String phrase,
                                                                             @RequestParam(required = false) final String database) {
@@ -49,7 +51,8 @@ public class KeywordAnalyticController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(responses);
     }
-
+    
+    @CrossOrigin
     @GetMapping("/api/analytic/keyword/kdi")
     public ResponseEntity<List<KDIResponse>> getKDI(@RequestParam final String phrases,
                                                     @RequestParam final String database) {
@@ -64,7 +67,7 @@ public class KeywordAnalyticController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(result);
     }
-
+    @CrossOrigin
     @GetMapping("/api/analytic/keyword/broad-matches")
     public ResponseEntity<List<KeywordBroadMatchResponse>> getKeywordBroadMatches(@RequestParam final String phrase,
                                                                                   @RequestParam final String database,
@@ -84,7 +87,8 @@ public class KeywordAnalyticController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(responses);
     }
-
+    
+    @CrossOrigin
     @GetMapping("/api/analytic/keyword/questions")
     public ResponseEntity<List<KeywordQuestionResponse>> getKeywordQuestions(@RequestParam final String phrase,
                                                                              @RequestParam final String database,
@@ -104,7 +108,8 @@ public class KeywordAnalyticController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(responses);
     }
-
+    
+    @CrossOrigin
     @GetMapping("/api/analytic/keyword/related")
     public ResponseEntity<List<KeywordRelatedResponse>> getKeywordRelated(@RequestParam final String phrase,
                                                                           @RequestParam final String database,

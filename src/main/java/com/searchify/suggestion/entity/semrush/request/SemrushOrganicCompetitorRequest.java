@@ -17,4 +17,5 @@ public class SemrushOrganicCompetitorRequest extends SemrushBaseRequest {
     private String domain;
     private Integer offset;
     private Integer limit;
+    private String database;
 }
