@@ -27,6 +27,7 @@ public class SemrushConstants {
     public static final String QUERY_PARAM_COUNTRY = "country";
     public static final String QUERY_PARAM_SORT_ORDER = "sort_order";
     public static final String QUERY_PARAM_DISPLAY_SORT = "display_sort";
+    public static final String QUERY_PARAM_GEO_TYPE = "geo_type";
     public static final String TYPE_PHRASE_THIS = "phrase_this";
     public static final String TYPE_PHRASE_KDI = "phrase_kdi";
     public static final String TYPE_PHRASE_FULLSEARCH = "phrase_fullsearch";
@@ -44,7 +45,7 @@ public class SemrushConstants {
     public static final String EXPORT_COLUMNS_TRAFFIC_TOP_PAGES = "page,display_date,traffic_share";
     public static final String EXPORT_COLUMNS_TRAFFIC_TOP_SUBFOLDERS = "subfolder,display_date,traffic_share,unique_pageviews";
     public static final String EXPORT_COLUMNS_TRAFFIC_TOP_SUBDOMAINS = "subdomain,display_date,total_visits,desktop_share,mobile_share";
-    public static final String EXPORT_COLUMNS_TRAFFIC_SOURCE = "from_target,display_date,traffic_share,traffic,traffic_type,channel";
+    public static final String EXPORT_COLUMNS_TRAFFIC_SOURCE = "from_target,display_date,traffic_share,traffic,traffic_type,channel,device_type";
     public static final String EXPORT_COLUMNS_TRAFFIC_DESTINATION = "to_target,traffic_share,display_date";
     public static final String EXPORT_COLUMNS_AGESEX_DISTRIBUTION = "age,female_users,male_users,female_share,male_share,display_date";
     public static final String EXPORT_COLUMNS_GEO_DISTRIBUTION = "geo,traffic,traffic_share,desktop_share,mobile_share,display_date";

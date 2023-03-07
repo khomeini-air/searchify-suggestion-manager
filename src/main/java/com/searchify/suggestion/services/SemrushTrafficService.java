@@ -70,6 +70,7 @@ import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DISPLAY_OFFSET;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DOMAIN;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_EXPORT_COLUMNS;
+import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_GEO_TYPE;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_KEY;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_SORT_ORDER;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_TARGET;
@@ -240,12 +241,16 @@ public class SemrushTrafficService {
         params.add(QUERY_PARAM_KEY, apiKey);
         params.add(QUERY_PARAM_TARGET, request.getTarget());
         params.add(QUERY_PARAM_DISPLAY_DATE, formatDisplayDate(request.getDisplayDate()));
-        params.add(QUERY_PARAM_TRAFFIC_TYPE, request.getTrafficType().getType());
-        params.add(QUERY_PARAM_TRAFFIC_CHANNEL, request.getTrafficChannel().getChannel());
         params.add(QUERY_PARAM_DISPLAY_OFFSET, String.valueOf(request.getOffset()));
         params.add(QUERY_PARAM_DISPLAY_LIMIT, String.valueOf(request.getLimit()));
         params.add(QUERY_PARAM_EXPORT_COLUMNS, EXPORT_COLUMNS_TRAFFIC_SOURCE);
         params.add(QUERY_PARAM_SORT_ORDER, SORT_ORDER_TRAFFIC_SHARE_DESC);
+
+        if (request.getTrafficType() != null)
+            params.add(QUERY_PARAM_TRAFFIC_TYPE, request.getTrafficType().getType());
+
+        if (request.getTrafficChannel() != null)
+            params.add(QUERY_PARAM_TRAFFIC_CHANNEL, request.getTrafficChannel().getChannel());
 
         final String responseBody = webClientService.retrieve(
                 apiBaseUrl,
@@ -327,6 +332,9 @@ public class SemrushTrafficService {
         params.add(QUERY_PARAM_DISPLAY_LIMIT, String.valueOf(request.getLimit()));
         params.add(QUERY_PARAM_EXPORT_COLUMNS,  EXPORT_COLUMNS_GEO_DISTRIBUTION);
         params.add(QUERY_PARAM_SORT_ORDER, SORT_ORDER_GEO_DISTRIBUTION);
+
+        if (request.getGeoType() != null)
+            params.add(QUERY_PARAM_GEO_TYPE, request.getGeoType().getType());
 
         final String responseBody = webClientService.retrieve(
                 apiBaseUrl,

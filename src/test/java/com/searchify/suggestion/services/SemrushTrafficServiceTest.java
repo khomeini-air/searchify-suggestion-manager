@@ -4,13 +4,11 @@ import com.searchify.config.test.SearchifyApplicationContextTestConfig;
 import com.searchify.suggestion.entity.semrush.enums.SemrushPeriod;
 import com.searchify.suggestion.entity.semrush.enums.SemrushTrafficChannel;
 import com.searchify.suggestion.entity.semrush.enums.SemrushTrafficType;
-import com.searchify.suggestion.entity.semrush.request.SemrushOrganicCompetitorRequest;
 import com.searchify.suggestion.entity.semrush.request.SemrushTopPagesRequest;
 import com.searchify.suggestion.entity.semrush.request.SemrushTopSubdomainRequest;
 import com.searchify.suggestion.entity.semrush.request.SemrushTopSubfolderRequest;
 import com.searchify.suggestion.entity.semrush.request.SemrushTrafficSourceRequest;
 import com.searchify.suggestion.entity.semrush.request.SemrushTrafficSummaryRequest;
-import com.searchify.suggestion.entity.semrush.response.SemrushOrganicCompetitorResponse;
 import com.searchify.suggestion.entity.semrush.response.SemrushTopPagesResponse;
 import com.searchify.suggestion.entity.semrush.response.SemrushTopSubdomainResponse;
 import com.searchify.suggestion.entity.semrush.response.SemrushTopSubfolderResponse;
@@ -39,13 +37,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.searchify.suggestion.api.constant.SemrushConstants.COMMA_SEPARATOR;
-import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_ORGANIC;
 import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_TRAFFIC_SOURCE;
 import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_TRAFFIC_SUMMARY;
 import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_TRAFFIC_TOP_PAGES;
 import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_TRAFFIC_TOP_SUBDOMAINS;
 import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_TRAFFIC_TOP_SUBFOLDERS;
-import static com.searchify.suggestion.api.constant.SemrushConstants.PATH_ROOT;
 import static com.searchify.suggestion.api.constant.SemrushConstants.PATH_TRAFFIC_SOURCES;
 import static com.searchify.suggestion.api.constant.SemrushConstants.PATH_TRAFFIC_SUMMARY;
 import static com.searchify.suggestion.api.constant.SemrushConstants.PATH_TRAFFIC_TOP_PAGES;
@@ -55,7 +51,6 @@ import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DISPLAY_DATE;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DISPLAY_LIMIT;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DISPLAY_OFFSET;
-import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DOMAIN;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_EXPORT_COLUMNS;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_KEY;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_SORT_ORDER;
@@ -63,9 +58,7 @@ import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_TARGETS;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_TRAFFIC_CHANNEL;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_TRAFFIC_TYPE;
-import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_TYPE;
 import static com.searchify.suggestion.api.constant.SemrushConstants.SORT_ORDER_TRAFFIC_SHARE_DESC;
-import static com.searchify.suggestion.api.constant.SemrushConstants.TYPE_DOMAIN_ORGANIC;
 import static com.searchify.suggestion.util.SemrushUtil.formatDisplayDate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -296,14 +289,14 @@ class SemrushTrafficServiceTest {
         params.add(QUERY_PARAM_EXPORT_COLUMNS, EXPORT_COLUMNS_TRAFFIC_SOURCE);
         params.add(QUERY_PARAM_SORT_ORDER, SORT_ORDER_TRAFFIC_SHARE_DESC);
 
-        final String semrushResponse = "from_target;display_date;traffic_share;traffic;channel;traffic_type\n" +
-        "phlap.net;2022-12-01;2.33;7025;referral;paid\n" +
-        "blackhatworld.com;2022-12-01;3.4;2342;referral;paid\n" +
-        "crunchyroll.com;2022-12-01;5.8;1873;referral;paid";
+        final String semrushResponse = "from_target;display_date;traffic_share;traffic;channel;traffic_type;device_type\n" +
+        "phlap.net;2022-12-01;2.33;7025;referral;paid;mobile\n" +
+        "blackhatworld.com;2022-12-01;3.4;2342;referral;paid;mobile\n" +
+        "crunchyroll.com;2022-12-01;5.8;1873;referral;paid;mobile";
         final List<SemrushTrafficSourceResponse> result = new ArrayList<>();
-        result.add(new SemrushTrafficSourceResponse("phlap.net", LocalDate.of(2022, 12, 01), 2.33d, 7025l, "paid", "referral"));
-        result.add(new SemrushTrafficSourceResponse("blackhatworld.com", LocalDate.of(2022, 12, 01), 3.4d, 2342l, "paid", "referral"));
-        result.add(new SemrushTrafficSourceResponse("crunchyroll.com", LocalDate.of(2022, 12, 01), 5.8d, 1873l, "paid", "referral"));
+        result.add(new SemrushTrafficSourceResponse("phlap.net", LocalDate.of(2022, 12, 01), 2.33d, 7025l, "paid", "referral", "mobile"));
+        result.add(new SemrushTrafficSourceResponse("blackhatworld.com", LocalDate.of(2022, 12, 01), 3.4d, 2342l, "paid", "referral", "mobile"));
+        result.add(new SemrushTrafficSourceResponse("crunchyroll.com", LocalDate.of(2022, 12, 01), 5.8d, 1873l, "paid", "referral", "mobile"));
 
         when(webClientService.retrieve(
                 apiBaseUrl,

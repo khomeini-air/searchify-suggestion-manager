@@ -6,15 +6,19 @@ import com.searchify.suggestion.api.response.TopSubfolderResponse;
 import com.searchify.suggestion.api.response.TrafficAgeSexDistResponse;
 import com.searchify.suggestion.api.response.TrafficDestinationResponse;
 import com.searchify.suggestion.api.response.TrafficGeoDistResponse;
+import com.searchify.suggestion.api.response.TrafficSourceResponse;
 import com.searchify.suggestion.api.response.TrafficSummaryResponse;
 import com.searchify.suggestion.entity.semrush.enums.SemrushGeoType;
 import com.searchify.suggestion.entity.semrush.enums.SemrushPeriod;
+import com.searchify.suggestion.entity.semrush.enums.SemrushTrafficChannel;
+import com.searchify.suggestion.entity.semrush.enums.SemrushTrafficType;
 import com.searchify.suggestion.entity.semrush.request.SemrushAgeSexDistRequest;
 import com.searchify.suggestion.entity.semrush.request.SemrushGeoDistRequest;
 import com.searchify.suggestion.entity.semrush.request.SemrushTopPagesRequest;
 import com.searchify.suggestion.entity.semrush.request.SemrushTopSubdomainRequest;
 import com.searchify.suggestion.entity.semrush.request.SemrushTopSubfolderRequest;
 import com.searchify.suggestion.entity.semrush.request.SemrushTrafficDestinationRequest;
+import com.searchify.suggestion.entity.semrush.request.SemrushTrafficSourceRequest;
 import com.searchify.suggestion.entity.semrush.request.SemrushTrafficSummaryRequest;
 import com.searchify.suggestion.entity.semrush.response.SemrushAgeSexDistResponse;
 import com.searchify.suggestion.entity.semrush.response.SemrushGeoDistResponse;
@@ -22,6 +26,7 @@ import com.searchify.suggestion.entity.semrush.response.SemrushTopPagesResponse;
 import com.searchify.suggestion.entity.semrush.response.SemrushTopSubdomainResponse;
 import com.searchify.suggestion.entity.semrush.response.SemrushTopSubfolderResponse;
 import com.searchify.suggestion.entity.semrush.response.SemrushTrafficDestinationResponse;
+import com.searchify.suggestion.entity.semrush.response.SemrushTrafficSourceResponse;
 import com.searchify.suggestion.entity.semrush.response.SemrushTrafficSummaryResponse;
 import com.searchify.suggestion.services.SemrushTrafficService;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -169,30 +174,33 @@ public class TrafficAnalyticController {
                 .body(result);
     }
 
-    /*@GetMapping("/api/analytic/traffic/destinations")
+    @GetMapping("/api/analytic/traffic/sources")
     public ResponseEntity<List<TrafficSourceResponse>> getTrafficSources(@RequestParam
-                                                                                  @Schema(description = "target website",
-                                                                                          example = "ebay.com") final String target,
-                                                                             @RequestParam
-                                                                                  @DateTimeFormat(pattern = "yyyy-MM")
-                                                                                  @Schema(pattern = "yyyy-MM", example = "2023-02") final YearMonth displayDate,
-                                                                             @RequestParam @Min(0) @Max(10000)
-                                                                                  @Schema(description = "Skip the specified number of result") final Integer offset,
-                                                                             @RequestParam @Min(1) @Max(5000)
-                                                                                  @Schema(description = "The number of results returned") final Integer limit) {
-        final SemrushTrafficSourceRequest semrushRequest = new SemrushTrafficSourceRequest(target, displayDate, offset, limit);
-        final List<SemrushTrafficDestinationResponse> semrushResponse = semrushService.getTrafficDestinations(semrushRequest);
+                                                                         @Schema(description = "target website", example = "ebay.com") final String target,
+                                                                         @RequestParam
+                                                                         @DateTimeFormat(pattern = "yyyy-MM")
+                                                                         @Schema(pattern = "yyyy-MM", example = "2023-02") final YearMonth displayDate,
+                                                                         @RequestParam(required = false)
+                                                                         @Schema(description = "traffic type", example = "organic, paid") final SemrushTrafficType type,
+                                                                         @RequestParam(required = false)
+                                                                         @Schema(description = "traffic channel", example = "direct, referral") final SemrushTrafficChannel channel,
+                                                                         @RequestParam @Min(0) @Max(10000)
+                                                                         @Schema(description = "Skip the specified number of result") final Integer offset,
+                                                                         @RequestParam @Min(1) @Max(5000)
+                                                                         @Schema(description = "The number of results returned") final Integer limit) {
+        final SemrushTrafficSourceRequest semrushRequest = new SemrushTrafficSourceRequest(target, displayDate, type, channel, offset, limit);
+        final List<SemrushTrafficSourceResponse> semrushResponse = semrushService.getTrafficSources(semrushRequest);
         if (semrushResponse.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        final List<TrafficDestinationResponse> result = semrushResponse.stream().map(e -> new TrafficDestinationResponse(e.getToTarget(), e.getTrafficShare(),
-                YearMonth.from(e.getDisplayDate()))).collect(Collectors.toList());
+        final List<TrafficSourceResponse> result = semrushResponse.stream().map(e -> new TrafficSourceResponse(e.getFromTarget(),
+                e.getTrafficShare(), e.getTraffic(), e.getTrafficType(), e.getTrafficChannel(), e.getDeviceType(), YearMonth.from(e.getDisplayDate()))).collect(Collectors.toList());
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(result);
-    }*/
+    }
 
     @CrossOrigin
     @GetMapping("/api/analytic/traffic/destinations")

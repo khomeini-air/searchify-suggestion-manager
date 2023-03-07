@@ -24,6 +24,7 @@ public class TrafficSourceResponse {
     private Long traffic;
     private String trafficType;
     private String trafficChannel;
+    private String deviceType;
 
     @JsonFormat(pattern = "yyyy-MM")
     private YearMonth displayDate;

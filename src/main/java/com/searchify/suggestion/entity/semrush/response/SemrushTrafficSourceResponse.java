@@ -36,4 +36,7 @@ public class SemrushTrafficSourceResponse extends SemrushBaseResponse {
 
     @CsvBindByName(column = "channel")
     private String trafficChannel;
+
+    @CsvBindByName(column = "device_type")
+    private String deviceType;
 }
