@@ -41,6 +41,7 @@ import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLU
 import static com.searchify.suggestion.api.constant.SemrushConstants.EXPORT_COLUMNS_PHRASE_RELATED;
 import static com.searchify.suggestion.api.constant.SemrushConstants.PATH_ROOT;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DATABASE;
+import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DISPLAY_DATE;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DISPLAY_LIMIT;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DISPLAY_OFFSET;
 import static com.searchify.suggestion.api.constant.SemrushConstants.QUERY_PARAM_DISPLAY_SORT;
@@ -54,6 +55,7 @@ import static com.searchify.suggestion.api.constant.SemrushConstants.TYPE_PHRASE
 import static com.searchify.suggestion.api.constant.SemrushConstants.TYPE_PHRASE_QUESTIONS;
 import static com.searchify.suggestion.api.constant.SemrushConstants.TYPE_PHRASE_RELATED;
 import static com.searchify.suggestion.api.constant.SemrushConstants.TYPE_PHRASE_THIS;
+import static com.searchify.suggestion.util.SemrushUtil.formatDateYyyyMM15;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -75,50 +77,17 @@ class SemrushKeywordServiceTest {
     @Autowired
     private Environment env;
 
-    /*@Test
-    void getKeywordOverviewSuccess() {
-        final String phrase = "search";
-        final String database = "us";
-        final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add(QUERY_PARAM_KEY, apiKey);
-        params.add(QUERY_PARAM_TYPE, TYPE_PHRASE_THIS);
-        params.add(QUERY_PARAM_PHRASE, phrase);
-        params.add(QUERY_PARAM_DATABASE, database);
-        params.add(QUERY_PARAM_EXPORT_COLUMNS, EXPORT_COLUMNS_KEYWORD_OVERVIEW);
-        final String semrushResponse = "Date;Database;Keyword;Search Volume;CPC;Competition;Number of Results;Trends;Keyword Difficulty Index;Keywords SERP Features;Intent\n" +
-                "201903;bo;seo;390;0.44;0.03\n" +
-                "201903;hu;seo;1900;0.82;0.45\n" +
-                "201903;th;seo;5400;0.96;0.49\n" +
-                "201903;cr;seo;590;0.43;0.14";
-        final YearMonth date = YearMonth.parse("201903", DateTimeFormatter.ofPattern("yyyyMM"));
-        final List<SemrushKeywordOverviewResponse> result = new ArrayList<>();
-        result.add(new SemrushKeywordOverviewResponse(date, "bo", "seo", 390, 0.44, 0.03));
-        result.add(new SemrushKeywordOverviewResponse(date, "hu", "seo", 1900, 0.82, 0.45));
-        result.add(new SemrushKeywordOverviewResponse(date, "th", "seo", 5400, 0.96, 0.49));
-        result.add(new SemrushKeywordOverviewResponse(date, "cr", "seo", 590, 0.43, 0.14));
-
-        when(webClientService.retrieve(
-                apiBaseUrl,
-                PATH_ROOT,
-                params,
-                HttpMethod.GET,
-                Collections.emptyMap(),
-                List.of(MediaType.TEXT_HTML),
-                StringUtils.EMPTY
-        )).thenReturn(semrushResponse);
-
-        Assertions.assertEquals(result, semrushService.getKeywordOverview(phrase, database));
-    }*/
-
     @Test
     void getKeywordOverviewSuccess() {
         final String phrase = "search";
         final String database = "us";
+        final YearMonth displayDate = YearMonth.of(2023, 1);
         final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add(QUERY_PARAM_KEY, apiKey);
         params.add(QUERY_PARAM_TYPE, TYPE_PHRASE_THIS);
         params.add(QUERY_PARAM_PHRASE, phrase);
         params.add(QUERY_PARAM_DATABASE, database);
+        params.add(QUERY_PARAM_DISPLAY_DATE, formatDateYyyyMM15(displayDate));
         params.add(QUERY_PARAM_EXPORT_COLUMNS, EXPORT_COLUMNS_KEYWORD_OVERVIEW);
         final String semrushResponse = "Date;Database;Keyword;Search Volume;CPC;Competition;Number of Results;Trends;Keyword Difficulty Index;Keywords SERP Features;Intent\n" +
                 "201903;cr;seo;590;0.43;0.14;12190000000;0.66,0.66,0.66,0.66,0.81,0.66,0.66,0.81,1.00,0.66,0.66,0.54;100;6,7,13,21;1";
@@ -136,18 +105,20 @@ class SemrushKeywordServiceTest {
                 StringUtils.EMPTY
         )).thenReturn(semrushResponse);
 
-        Assertions.assertEquals(result, semrushService.getKeywordOverview(phrase, database));
+        Assertions.assertEquals(result, semrushService.getKeywordOverview(phrase, database, displayDate));
     }
 
     @Test
     void getKeywordOverviewNoDateResponseSuccess() {
         final String phrase = "search";
         final String database = "us";
+        final YearMonth displayDate = YearMonth.of(2023, 1);
         final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add(QUERY_PARAM_KEY, apiKey);
         params.add(QUERY_PARAM_TYPE, TYPE_PHRASE_THIS);
         params.add(QUERY_PARAM_PHRASE, phrase);
         params.add(QUERY_PARAM_DATABASE, database);
+        params.add(QUERY_PARAM_DISPLAY_DATE, formatDateYyyyMM15(displayDate));
         params.add(QUERY_PARAM_EXPORT_COLUMNS, EXPORT_COLUMNS_KEYWORD_OVERVIEW);
         final String semrushResponse = "Database;Keyword;Search Volume;CPC;Competition;Number of Results;Trends;Keyword Difficulty Index;Keywords SERP Features;Intent\n" +
                 "cr;seo;590;0.43;0.14;12190000000;0.66,0.66,0.66,0.66,0.81,0.66,0.66,0.81,1.00,0.66,0.66,0.54;100;6,7,13,21;1";
@@ -165,7 +136,7 @@ class SemrushKeywordServiceTest {
                 StringUtils.EMPTY
         )).thenReturn(semrushResponse);
 
-        Assertions.assertEquals(result, semrushService.getKeywordOverview(phrase, database));
+        Assertions.assertEquals(result, semrushService.getKeywordOverview(phrase, database, displayDate));
     }
 
     @Test

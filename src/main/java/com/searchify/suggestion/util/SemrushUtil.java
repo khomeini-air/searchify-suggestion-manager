@@ -38,4 +38,11 @@ public class SemrushUtil {
         }
         return String.format("%s-01", DateTimeFormatter.ofPattern("yyyy-MM").format(date));
     }
+
+    public static String formatDateYyyyMM15(final YearMonth date) {
+        if (Objects.isNull(date)) {
+            return null;
+        }
+        return String.format("%s15", DateTimeFormatter.ofPattern("yyyyMM").format(date));
+    }
 }

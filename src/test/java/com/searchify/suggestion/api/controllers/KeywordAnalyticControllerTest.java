@@ -27,30 +27,13 @@ class KeywordAnalyticControllerTest {
     private final static YearMonth DATE = YearMonth.parse("201903", DateTimeFormatter.ofPattern("yyyyMM"));
     private final static String PHRASE = "seo";
     private final static String DATABASE = "us";
+    private final static YearMonth DISPLAY_DATE = YearMonth.of(2023, 1);
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
     private SemrushKeywordService semrushKeywordService;
-
-    /*@Test
-    void getKeywordOverviewSuccess() throws Exception {
-        final List<SemrushKeywordOverviewResponse> semrushResult = new ArrayList<>();
-
-        semrushResult.add(new SemrushKeywordOverviewResponse(DATE, "bo","seo",390, 0.44, 0.03));
-        semrushResult.add(new SemrushKeywordOverviewResponse(DATE, "hu","seo",1900,0.82,0.45));
-        semrushResult.add(new SemrushKeywordOverviewResponse(DATE, "th","seo",5400,0.96,0.49));
-        semrushResult.add(new SemrushKeywordOverviewResponse(DATE, "cr","seo",590,0.43, 0.14));
-
-        final String resultJson = "{\"date\":\"2019-03\",\"keyword\":\"seo\",\"searchVolume\":8280,\"cpc\":0.6625}";
-        when(semrushKeywordService.getKeywordOverview(PHRASE, DATABASE)).thenReturn(semrushResult);
-
-        mockMvc.perform(get("/api/analytic/keyword/overview?phrase=seo&database=us"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().string(resultJson));
-    }*/
 
     @Test
     void getKeywordOverviewSuccess() throws Exception {
@@ -60,9 +43,9 @@ class KeywordAnalyticControllerTest {
         final String resultJson = "[{\"date\":\"2019-03\",\"database\":\"cr\",\"keyword\":\"seo\",\"searchVolume\":590,\"cpc\":0.43," +
                 "\"competition\":0.14,\"results\":12190000000,\"serpFeatures\":[6,7,13,21],\"trends\":[0.66,0.66,0.66,0.66,0.81,0.66,0.66,0.81,1.0,0.66,0.66,0.54]," +
                 "\"kdi\":100.0,\"intent\":1}]";
-        when(semrushKeywordService.getKeywordOverview(PHRASE, DATABASE)).thenReturn(semrushResult);
+        when(semrushKeywordService.getKeywordOverview(PHRASE, DATABASE, DISPLAY_DATE)).thenReturn(semrushResult);
 
-        mockMvc.perform(get("/api/analytic/keyword/overview?phrase=seo&database=us"))
+        mockMvc.perform(get("/api/analytic/keyword/overview?phrase=seo&database=us&displayDate=2023-01"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string(resultJson));
@@ -70,9 +53,9 @@ class KeywordAnalyticControllerTest {
 
     @Test
     void getKeywordOverviewEmptyResult() throws Exception {
-        when(semrushKeywordService.getKeywordOverview(PHRASE, DATABASE)).thenReturn(Collections.EMPTY_LIST);
+        when(semrushKeywordService.getKeywordOverview(PHRASE, DATABASE, DISPLAY_DATE)).thenReturn(Collections.EMPTY_LIST);
 
-        mockMvc.perform(get("/api/analytic/keyword/overview?phrase=seo&database=us"))
+        mockMvc.perform(get("/api/analytic/keyword/overview?phrase=seo&database=us&displayDate=2023-01"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(StringUtils.EMPTY));
     }

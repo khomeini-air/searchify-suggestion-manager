@@ -16,6 +16,7 @@ import com.searchify.suggestion.entity.semrush.response.keyword.SemrushKeywordRe
 import com.searchify.suggestion.services.SemrushKeywordService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import java.time.YearMonth;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,8 +39,11 @@ public class KeywordAnalyticController {
     @CrossOrigin
     @GetMapping("/api/analytic/keyword/overview")
     public ResponseEntity<List<KeywordOverviewResponse>> getKeywordOverview(@RequestParam final String phrase,
-                                                                            @RequestParam(required = false) final String database) {
-        final List<SemrushKeywordOverviewResponse> semrushResult = semrushService.getKeywordOverview(phrase, database);
+                                                                            @RequestParam(required = false) final String database,
+                                                                            @RequestParam
+                                                                            @DateTimeFormat(pattern = "yyyy-MM")
+                                                                            @Schema(pattern = "yyyy-MM", example = "2023-01") final YearMonth displayDate) {
+        final List<SemrushKeywordOverviewResponse> semrushResult = semrushService.getKeywordOverview(phrase, database, displayDate);
         if (semrushResult.isEmpty()) {
             return ResponseEntity.notFound().build();
         }

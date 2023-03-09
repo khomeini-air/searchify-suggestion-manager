@@ -29,12 +29,14 @@ public class SemrushConstants {
     public static final String QUERY_PARAM_DISPLAY_SORT = "display_sort";
     public static final String QUERY_PARAM_GEO_TYPE = "geo_type";
     public static final String TYPE_PHRASE_THIS = "phrase_this";
+    public static final String TYPE_PHRASE_ALL = "phrase_all";
     public static final String TYPE_PHRASE_KDI = "phrase_kdi";
     public static final String TYPE_PHRASE_FULLSEARCH = "phrase_fullsearch";
     public static final String TYPE_PHRASE_QUESTIONS = "phrase_questions";
     public static final String TYPE_PHRASE_RELATED = "phrase_related";
     public static final String TYPE_DOMAIN_ORGANIC = "domain_organic_organic";
-    public static final String EXPORT_COLUMNS_KEYWORD_OVERVIEW = "Dt,Db,Ph,Nq,Cp,Co,Nr,Td,Kd,Fk,In";
+    public static final String EXPORT_COLUMNS_KEYWORD_OVERVIEW = "Ph,Nq,Cp,Co,Nr,Td,Kd,In";
+    public static final String EXPORT_COLUMNS_KEYWORD_ALL = "Dt,Db,Ph,Nq,Cp,Co,Nr,Kd,In";
     public static final String EXPORT_COLUMNS_KDI = "Ph,Kd";
     public static final String EXPORT_COLUMNS_PHRASE_FULLSEARCH = "Ph,Nq,Kd";
     public static final String EXPORT_COLUMNS_PHRASE_QUESTIONS = "Ph,Nq,Kd";
